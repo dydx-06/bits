@@ -15,6 +15,11 @@
 \definecolor{pagecolor}{HTML}{DCE2F0}
 \definecolor{textcolor}{HTML}{373D4A}
 
+\definecolor{quasicolor}{HTML}{5E4E9C}
+\definecolor{taxicabcolor}{HTML}{4169B0}
+\definecolor{euclideancolor}{HTML}{0080C4}
+\definecolor{infinitycolor}{HTML}{009EE3}
+
 \pagecolor{pagecolor}
 \color{textcolor}
 
@@ -92,8 +97,19 @@
 \setlist[enumerate]{label=(\alph*)}
 \pgfplotsset{compat=newest}
 
+\newtheoremstyle{boldnote}
+  {}
+  {}
+  {\itshape}
+  {}
+  {\bfseries}
+  {.}
+  { }
+  {\thmname{#1}\thmnumber{ #2}\thmnote{ (\bfseries #3)}}
+\theoremstyle{boldnote}
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
+
 \theoremstyle{definition}
 \newtheorem{definition}[theorem]{Definition}
 \newtheorem{example}{Example}
@@ -110,7 +126,7 @@
 \begin{document}
 \maketitle
 
-\section{Review}
+\section{Preliminaries}
 \subsection{Inner Product Spaces}
 \begin{definition}
     Let $V$ be a real vector space. A function $\ab{\cdot, \cdot} : V \times V \to \bb R$ is called a \emph{real inner product} if it satisfies the following three properties for $x, y, z \in V$ and $c \in \bb R$:
@@ -130,7 +146,7 @@ It may also be defined on $\bb C$-spaces, replacing (a) with conjugate symmetry:
     Let $V$ be a real vector space and $\ab{\cdot, \cdot}$ an inner product. Then, $(V, \ab{\cdot, \cdot})$ is called a \emph{real inner product space}.
 \end{definition}
 
-For brevity, we may simply state that $V$ is an inner product space, with the notation for the inner product being implicit.
+For brevity, we may simply state that $V$ is an inner product space, with the notation for the inner product being implicit, and all future inner product spaces map into $\bb R$ unless stated otherwise.
 
 \subsection{Normed Linear Spaces}
 \begin{definition}
@@ -142,22 +158,163 @@ For brevity, we may simply state that $V$ is an inner product space, with the no
     \end{enumerate}
 \end{definition}
 
-This last property is referred to as the \emph{triangle inequality}. The norm assigns a notion of length to vectors, and generalizes the standard formula for the length of a vector in a Euclidean vector space: for $\vb x = (x_1, x_2, \dots , x_n)$ where $x_i \in \bb R$ for $i \in 1 : n$.
+This last property is referred to as the \emph{triangle inequality}. The norm assigns a notion of length to vectors, and generalizes the standard formula for the length of a vector in a Euclidean vector space: for $\vb x = (x_1, x_2, \dots , x_n)^\top$ where $x_i \in \bb R$ for $i \in 1 : n$.
 \[\norm{\vb x} = \p{\sum_{i=1}^n x_i^2}^{1/2}.\]
 
 \begin{definition}
     Let $V$ be a vector space and $\norm{\cdot}$ a norm. Then $(V, \norm{\cdot})$ is called a \emph{normed linear space}.
 \end{definition}
 
-Once again, we may conventionally ommit the norm from notation when defining a new normed linear space.
+Once again, we may conventionally omit the norm from notation when defining a new normed linear space.
 
 \begin{definition}
-    Let $p \geq 1$. The \emph{$p$-norm} (or \emph{$\ell^p$-norm}) of a vector $\vb x = (x_1, x_2, \dots, x_n)$ where $x_i \in \bb R$ for $i \in 1 : n$ is
+    Let $p \geq 1$. The \emph{$p$-norm} (or \emph{$\ell^p$-norm}) of a vector $\vb x = (x_1, x_2, \dots, x_n)^\top$ where $x_i \in \bb R$ for $i \in 1 : n$ is
     \[\norm{\vb x}_p \coloneqq \p{\sum_{i=1}^n \abs{x_i}^p}^{1/p}.\]
+
+    For $p=1$, we get the \emph{taxicab} or \emph{Manhattan} norm, for $p=2$, we get the standard Euclidean norm, and for $p \to \oo$, the $p$-norm approaches the \emph{infinity} or \emph{maximum} norm:
+    \[\norm{\vb x}_\oo \coloneqq \max_{i} \abs{x_i}.\]
 \end{definition}
 
-For $p=1$, we get the \emph{taxicab} or \emph{Manhattan} norm, for $p=2$, we get the standard Euclidean norm, and for $p \to \oo$, the $p$-norm approaches the \emph{infinity} or \emph{maximum} norm:
-\[\norm{\vb x}_\oo \coloneqq \max_{i} \abs{x_i}.\]
-For $p \in (0, 1)$, the triangle inequality does not hold, and the resulting functions are called \emph{quasinorms}.
+For $p \in (0, 1)$, the triangle inequality does not hold, and the resulting functions are called \emph{quasinorms}. Pictured below are unit circles in the $0.5$-quasinorm, and $p$-norms for $p \in \{1, 2, \oo\}$.
+
+\begin{center}
+\begin{tikzpicture}[scale=2.5]
+
+    % Axes
+    \draw[->] (-1.5,0) -- (1.5,0) node[right] {$x$};
+    \draw[->] (0,-1.5) -- (0,1.5) node[above] {$y$};
+    \node[below left, font=\scriptsize] at (0,0) {0};
+
+    % Infinity norm
+    \draw[infinitycolor, thick, dashdotted] (-1,-1) rectangle (1,1);
+    \node[infinitycolor, above right] at (1,1) {$\oo$};
+
+    % Euclidean norm
+    \draw[euclideancolor, thick] (0,0) circle (1cm);
+    \node[euclideancolor, above right] at (0.71, 0.71) {2};
+
+    % Taxicab norm
+    \draw[taxicabcolor, thick, dashed] (1,0) -- (0,1) -- (-1,0) -- (0,-1) -- cycle;
+    \node[taxicabcolor, right] at (0.5, 0.6) {1};
+
+    % Quasinorm (1/2)
+    \draw[quasicolor, thick, dotted] 
+        plot[domain=0:360, samples=200, smooth] 
+        ({sign(cos(\x))*abs(cos(\x))^4}, {sign(sin(\x))*abs(sin(\x))^4});
+    \node[quasicolor, below left] at (0.5, 0.5) {$0.5$};
+
+\end{tikzpicture}
+\end{center}
+
+\begin{lemma}
+  Let $V$ be a normed linear space. Then,
+  \[\abs{\norm{x} - \norm{y}} \leq \norm{x - y}\]
+  for every $x, y \in V$.
+\end{lemma}
+
+\begin{theorem}
+  Let $(V, \norm{\cdot})$ be a normed linear space. Then $\norm{\cdot} : V \to \bb R$ is uniformly continuous.
+\end{theorem}
+\begin{proof}
+  Let $\ep > 0$, and choose $\de = \ep$. If $\norm{x - y} < \de$, then by Lemma 1.6,
+  \[\abs{\norm{x} - \norm{y}} \leq \norm{x - y} < \de = \ep.\]
+  Therefore, $\abs{\norm{x} - \norm{y}} < \ep$.
+\end{proof}
+
+\begin{theorem}
+  Every inner product space $V$ is naturally a normed linear space. For $x \in V$ define
+  \[\norm{x} \coloneqq \sqrt{\ab{x, x}}.\]
+\end{theorem}
+
+However, the converse is not always true.
+
+\begin{theorem}
+  A normed linear space $V$ is an inner product space iff the norm satisfies the parallelogram law:
+  \[\norm{x + y}^2 + \norm{x - y}^2 = 2(\norm{x}^2 + \norm{y}^2).\]
+  The inner product is given by
+  \[\ab{x, y} = \f 14 \p{\norm{x + y}^2 - \norm{x - y}^2}\]
+  for all $x, y \in V$.
+\end{theorem}
+
+We now look at a fundamental theorem in linear algebra.
+\begin{theorem}[Cauchy-Schwarz Inequality]
+  Let $V$ be an inner product space with an induced norm. Then for all $x, y \in V$
+  \[\abs{\ab{x, y}} \leq \norm{x}\norm{y}.\]
+\end{theorem}
+\begin{proof}
+  We utilize the discriminant of a quadratic equation and the nonnegativity of the norm. Firstly, if $y = 0$, then the inequality holds trivially. For $y \neq 0$, consider the vector $x + ty$ for some $t \in \bb R$. Then
+  \[0 \leq \norm{x + ty}^2 = \ab{x+ty, x+ty} = \norm{y}^2t^2 + 2\ab{x, y}t + \norm{x}^2.\]
+  Since the quadratic in $t$ is nonnegative, its discriminant must be nonpositive, giving us
+  \[4\ab{x, y}^2 - 4\norm{x}^2\norm{y}^2 \leq 0 \imp \abs{\ab{x, y}} \leq \norm{x}\norm{y}.\]
+\end{proof}
+
+\subsection{Eigenvalues and Eigenvectors}
+\begin{definition}
+  Let $A$ be a square matrix of order $n$. Then, $\la$ is said to be an \emph{eigenvalue} of $A$ if there exists nonzero $\vb x \in \bb R^n$ such that
+  \[A\vb x = \la \vb x.\]
+  Here, $\vb x$ is called an \emph{eigenvector} corresponding to $\la$.
+\end{definition}
+
+To find the eigenvalues of an arbitrary matrix, consider the following:
+\[A\vb x = \la \vb x \imp A\vb x - \la \vb x = \vb 0 \imp (A - \la I)\vb x = \vb 0.\]
+Since $\vb x$ is nonzero, we require the matrix $A - \la I$ to be singular. That is,
+\[\det(A - \la I) = 0.\]
+The left side of the equation is a polynomial in $\la$, and is called the \emph{characteristic polynomial}. Therefore the eigenvalues of a matrix $A$ are the \emph{roots} to its characteristic polynomial.
+
+\begin{theorem}
+  Eigenvectors corresponding to distinct eigenvalues are linearly independent.
+\end{theorem}
+
+\begin{definition}
+  A square matrix $A$ is said to be diagonalizable if there exists an invertible matrix $P$ such that
+  \[P^{-1}AP = D\]
+  where $D$ is a diagonal matrix.
+\end{definition}
+
+It turns out that in Definition 1.13, the entries of $D$ along the diagonal are the eigenvalues of $A$, and $P$ contains corresponding eigenvectors in the respective columns of the eigenvalues in $D$.
+
+\subsection{Quadratic Forms}
+Certain quadratic functions of several variables may be represented using matrices.
+\begin{definition}
+  A \emph{quadratic form} is a homogenous polynomial of degree $2$ in multiple variables.
+\end{definition}
+
+A quadratic form in $n$ variables may be written with a symmetric matrix $A$ of order $n$ and a vector $\vb x = (x_1, x_2, \dots, x_n)^\top$ of unknowns:
+\[Q(x) = \ab{A\vb x, \vb x} = \vb x^\top A\vb x = \sum_{i=1}^n a_{ii}x_{i}^2 + \underset{i \neq j}{\sum_{i=1}^n\sum_{j=1}^n} a_{ij}x_ix_j\]
+where $a_{ij}$ is the $(i,j)$th entry of $A$.
+
+\begin{definition}
+  Let $A$ be a square matrix of order $n$, and let $p = \ab{A\vb x, \vb x}$. If for all nonzero $\vb x \in \bb R^n$
+  \begin{enumerate}
+    \item $p > 0$, then $A$ is said to be \emph{positive definite},
+    \item $p \geq 0$, \emph{positive semidefinite},
+    \item $p < 0$, \emph{negative definite}, and
+    \item $p \leq 0$, \emph{negative semidefinite}.
+  \end{enumerate}
+  Otherwise, $A$ is said to be \emph{indefinite}.
+\end{definition}
+
+The definiteness of a matrix may also be realized through its principal minors.
+
+\begin{definition}
+  Let $A$ be a square matrix of size $n$. A \emph{principal minor of order $k$} of $A$ may be computed by the following.
+  \begin{enumerate}[label=\arabic*.]
+    \item Choose any set of $k$ indices $\{i_1, i_2, \dots, i_k\}$ from $\{1, 2, \dots , n\}$.
+    \item Keep the rows and columns corresponding to these indices, creating a $k \times k$ submatrix.
+    \item Take the determinant of this resulting submatrix to yield a principal minor of order $k$.
+  \end{enumerate}
+  If the first $k$ indices $\{1, 2, \dots, k\}$ are chosen, then the resulting principal minors called \emph{leading principal minors of order $k$}.
+\end{definition}
+
+\begin{theorem}
+  A matrix is
+  \begin{enumerate}[label=(\alph*), font=\upshape]
+    \item positive definite if all leading principle minors are positive,
+    \item positive semidefinite if all principal minors are nonnegative,
+    \item negative definite if the $k$th leading principal minor has the sign of $(-1)^k$, and
+    \item negative semidefinite if all principal minors of order $k$ either have the sign of $(-1)^k$ or are $0$.
+  \end{enumerate}
+  A matrix that does not fall into the aforementioned categories is indefinite.
+\end{theorem}
 
 \end{document}
