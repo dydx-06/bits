@@ -1,0 +1,108 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in, headheight=20pt]{geometry}
+\usepackage{amsthm, amsmath, amssymb}
+\usepackage{mathtools}
+\usepackage[italicdiff]{physics}
+\usepackage{enumitem}
+\usepackage{lmodern}
+
+\newcommand{\bb}[1]{\mathbb{#1}}
+\newcommand{\cl}[1]{\mathcal{#1}}
+
+\newcommand{\p}[1]{\left ( #1 \right )}
+\newcommand{\bk}[1]{\left [ #1 \right ]}
+\newcommand{\br}[1]{\left \{ #1 \}}
+\newcommand{\ab}[1]{\langle #1 \rangle}
+
+\newcommand{\f}[2]{\frac{#1}{#2}}
+\newcommand{\nset}{\varnothing}
+\newcommand{\oo}{\infty}
+\DeclareMathOperator{\D}{D}
+\DeclareMathOperator{\E}{E}
+\DeclareMathOperator{\Var}{Var}
+
+\newcommand{\al}{\alpha}
+\newcommand{\gm}{\gamma}
+\newcommand{\de}{\delta}
+\newcommand{\De}{\Delta}
+\newcommand{\ep}{\varepsilon}
+\newcommand{\la}{\lambda}
+\newcommand{\si}{\sigma}
+\newcommand{\om}{\omega}
+\newcommand{\Om}{\Omega}
+
+\newcommand{\imp}{\Rightarrow}
+\newcommand{\pmi}{\Leftarrow}
+\renewcommand{\iff}{\Leftrightarrow}
+\newcommand{\ffi}{\Rightarrow\!\Leftarrow}
+
+\setlist[enumerate]{label=(\alph*)}
+
+\newtheoremstyle{boldnote}
+  {}
+  {}
+  {\itshape} 
+  {}
+  {\bfseries}
+  {.}
+  { }
+  {\thmname{#1}\thmnumber{ #2}\thmnote{ (\bfseries #3)}}
+\theoremstyle{boldnote}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}{Example}
+
+\title{
+    \textbf{Week 1: Stochastic Galerkin Method}
+}
+\author{
+  Dhyan Laad \\
+  \texttt{2024ADPS0875G}
+}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Preliminaries}
+Galerkin methods are a family of numerical techniques that are used to approximate solutions of continuous operator problems (such as differential equations, commonly partial differential equations) by converting them into algebraic systems that are easier to work with. The stochastic Galerkin method described here is used to remove uncertaintly introduced by a random variable in a fractional initial value problem of the form
+\[\D^\al_{0, t} y(t, \xi) = a(\xi)y(t, \xi), \quad y(0, \xi) = y_0(\xi), \tag{1}\]
+where $a : \Xi \to \bb R$ is a measurable function that depends on the parameter $\xi$ defined on some subset $\Xi$ of $\bb R$, which will be modelled as a random variable $\xi : \Om \to \Xi$ on some probability space $(\Om, \cl F, P)$.
+
+In the case of the operator being the Caputo derivative, the solution to $(1)$ is given by
+\[y(t, \xi) = y_0(\xi)E_\al(a(\xi)t^\al) \tag{2}\]
+where $E_\al$ is the one-parameter family of Mittag-Leffler functions:
+\[E_\al(z) = \sum_{k=0}^\oo \f{z^k}{\Gamma(\al k + 1)}.\]
+
+Let the density of the probability measure $P$ be $\rho$. We are interested in expressing $(2)$ with a basis in the associated Hilbert space:
+\[\cl L_2(\Xi, \rho) = \{f : \Xi \to \bb R : \text{$f$ is measurable and $\E(f^2) < \oo$}\}.\]
+An orthnormal basis $\{\Phi_i\}$ of polynomials $\Phi_i : \Xi \to \bb R$ for $i \in \bb N_0$ can be constructed with the Gram-Schmidt process. Let $\Phi_0(x) = 1$, and $\deg(\Phi_i) = i$. It is possible to find a set of such orthogonal polynomials for a number of well-known probability distributions, although this is not always possible, and we continue under the assumption that the distribution may be modelled with such as a basis.
+
+The representation of a function $f \in \cl L_2(\Xi, \rho)$ is called its general polynomial chaos (gPC) expansion:
+\[f(\xi) = \sum_{i=0}^\oo f_i\Phi_i(\xi)\]
+where $f_i = \ab{f, \Phi_i}$ are real coefficients. Applying this to $(2)$, its gPC expansion would be
+\[y(t, \xi) = \sum_{i=0}^\oo \hat{v}_i(t)\Phi_i(\xi), \tag{3}\]
+with coefficient functions $\hat{v}_i : [0, \oo) \to \bb R$. Truncating $(3)$ yields a finite approximation:
+\[\hat{y}^{(n)}(t, \xi) = \sum_{i=0}^n \hat{v}_i(t)\Phi_i(\xi).\]
+It holds that
+\[\lim_{n \to \oo} \norm{y(t, \cdot) - \hat{y}^{(n)}(t, \cdot)} = 0\]
+on the Hilbert space for all $t \geq 0$.
+
+\section*{Stochastic Galerkin Method}
+We now present the stochastic Galerkin method. The core idea is to approximate the unknown coefficient functions in the gPC expansion of $(2)$. Start by defining a truncated approximation:
+\[\tilde{y}^{(n)}(t, \xi) = \sum_{i=0}^nv_i(t)\Phi_i(\xi) \tag{4}\]
+where each $v_i$ approximates $\hat{v}_i$. Now inserting $(4)$ into $(1)$ would yield a residual function, which encapsulates the error. To minimize this error, we require the residual to be orthogonal to the subspace spanned by the basis $\{\Phi_0, \Phi_1, \dots , \Phi_n\}$ in the Hilbert space. Mathematically, the inner product of the residual and each basis polynomial must evaluate to $0$. This inner product has the effect of removing the stochastic component $\xi$ from the system, and results in a coupled linear system of deterministic FDEs:
+\[\D^\al_{0,t} \vb v(t) = A\vb v(t) \tag{5}\]
+where $\vb v(t)$ is the vector of unknown approximated coefficients: $(v_0(t), v_1(t), \dots , v_n(t))^\top$ and $A$ is a symmetric matrix where the $(i,j)$th entry $a_{ij}$ is $\ab{a(\xi)\Phi_i, \Phi_j}$. The system $(5)$ can now be solved numerically.
+
+\subsection*{Convergence Analysis}
+We impose three assumptions before analyzing the convergence of the approximations on an interval $[0, T]$ for $T > 0$.
+\begin{enumerate}[label=A\arabic*.]
+    \item For order $\al \in (0, 1)$, there is a fractional derivative with respect to $\D^\al_{0, t}$ for each term of the series $(3)$. Furthermore,
+    \[\sum_{i=0}^\oo \hat{v}_i(t)\Phi_t(\xi) \quad \text{and} \quad \sum_{i=0}^\oo (\D^\al_{0,t} \hat{v}_i(t))\Phi_i(\xi)\]
+    are uniformly convergent on $[0, T]$ for every $\xi \in \Xi$.
+\end{enumerate}
+\end{document}
