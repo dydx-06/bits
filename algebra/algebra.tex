@@ -1,0 +1,315 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in, headheight=20pt]{geometry}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{amsthm, amsmath, amssymb}
+\usepackage{mathtools}
+\usepackage[italicdiff]{physics}
+\usepackage{enumitem}
+\usepackage{lmodern}
+\usepackage{fancyhdr}
+\usepackage{pgfornament}
+
+\definecolor{pagecolor}{HTML}{DCE2F0}
+\definecolor{textcolor}{HTML}{373D4A}
+
+\pagecolor{pagecolor}
+\color{textcolor}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Algebra I}
+\fancyhead[R]{\nouppercase{\leftmark}}
+\fancyfoot[C]{}
+
+\renewcommand{\headrule}{
+  \vspace{-5pt}
+  \hbox to \headwidth{
+    \leaders\hrule height 0.5pt\hfill
+    \hspace{5pt}
+    \raisebox{0.20pt}{\pgfornament[width=1cm]{11}}
+    \hspace{5pt}
+    \leaders\hrule height 0.5pt\hfill
+  }
+}
+
+\renewcommand{\footrule}{
+  \vspace{-12pt}
+  \hbox to \headwidth{
+    \leaders\hrule height 3.5pt depth -3pt \hfill 
+    \hspace{5pt} 
+    \thepage 
+    \hspace{5pt}
+    \leaders\hrule height 3.5pt depth -3pt \hfill
+  }
+}
+
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\headrule}{} 
+  \fancyfoot[C]{}
+  \renewcommand{\footrule}{
+    \vspace{-12pt}
+    \hbox to \headwidth{
+      \rule[0.65ex]{0.47\headwidth}{0.5pt}%
+      \hfill
+      \thepage
+      \hfill
+      \rule[0.65ex]{0.47\headwidth}{0.5pt}%
+    }
+  }
+}
+
+\newcommand{\bb}[1]{\mathbb{#1}}
+\newcommand{\cl}[1]{\mathcal{#1}}
+
+\newcommand{\p}[1]{\left ( #1 \right )}
+\newcommand{\bk}[1]{\left [ #1 \right ]}
+\newcommand{\br}[1]{\left \{ #1 \}}
+\newcommand{\ab}[1]{\langle #1 \rangle}
+
+\newcommand{\f}[2]{\frac{#1}{#2}}
+\newcommand{\nset}{\varnothing}
+\newcommand{\oo}{\infty}
+
+\newcommand{\gm}{\gamma}
+\newcommand{\de}{\delta}
+\newcommand{\De}{\Delta}
+\newcommand{\ep}{\varepsilon}
+\newcommand{\la}{\lambda}
+\newcommand{\si}{\sigma}
+\newcommand{\om}{\omega}
+\newcommand{\Om}{\Omega}
+
+\newcommand{\imp}{\Rightarrow}
+\newcommand{\pmi}{\Leftarrow}
+\renewcommand{\iff}{\Leftrightarrow}
+\newcommand{\ffi}{\Rightarrow\!\Leftarrow}
+
+\setlist[enumerate]{label=(\alph*)}
+
+\newtheoremstyle{boldnote}
+  {}
+  {}
+  {\itshape}
+  {}
+  {\bfseries}
+  {.}
+  { }
+  {\thmname{#1}\thmnumber{ #2}\thmnote{ (\bfseries #3)}}
+\theoremstyle{boldnote}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+
+\title{
+    \textbf{Algebra I} \\
+}
+\author{
+  Dhyan Laad \\
+  \texttt{2024ADPS0875G}
+}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Preliminaries}
+
+\subsection{The Natural Numbers}
+
+We start by covering a few basic and useful properties of the natural numbers, which in this text does not include $0$. Stated below is an axiom reffered to as the \emph{well ordering principle} (WOP).
+
+\begin{center}
+  \textit{Every nonempty subset of the natural numbers has a least element.}
+\end{center}
+
+Note that the WOP holds trivially for any finite extension to $\bb N$. Now from it, it is possible to prove the \emph{principle of mathematical induction} (PMI).
+
+\begin{theorem}[Principle of Mathematical Induction] For a set $S \subseteq \bb N$, if
+  \begin{enumerate}[font=\upshape]
+    \item $1 \in S$, and
+    \item for every $k \in \bb N$, $k \in S \imp k+1 \in S$,
+  \end{enumerate}
+  then $S = \bb N$.
+\end{theorem}
+\begin{proof}
+  Assume for contradiction that $S \neq \bb N$. This implies that there must exist natural numbers not in $S$. Define
+  \[C = \bb N \setminus S.\]
+  By construction, $C$ is nonempty, which means by the WOP, $C$ must have a least element $m$.
+  
+  Since $1 \in S$ and $m \in C$, $m \neq 1$, which means that $m > 1$. This means that $m-1$ is a natural number, and since $m$ is the smallest element of $C$, $m-1$ must be in $S$. By (b), since $m-1 \in S$, it must be the case that $m \in S$ $(\ffi)$. Since $m$ cannot be in both $S$ and $C$, the assumption that $S \neq \bb N$ must be false.
+\end{proof}
+
+This theorem is sometimes referred to as \emph{weak induction}. Ironically, \emph{strong induction} follows from the standard PMI.
+
+\begin{theorem}[Principle of Strong Induction]
+  For a set $S \subseteq \bb N$, if
+  \begin{enumerate}[font=\upshape]
+    \item $1 \in S$, and
+    \item for every $k \in \bb N$, $ \{1, 2, \dots , k\} \subseteq S \imp k + 1 \in S$,
+  \end{enumerate}
+  then $S = \bb N$.
+\end{theorem}
+
+It is also possible to axiomatize the PMI and derive the WOP from it. The proof is done by proving the contrapositive statement: if a set $S$ has no least element, then $S$ is empty.
+
+\begin{definition}
+  Let $a, b \in \bb Z$. We say that $a$ \emph{divides} $b$ if there exists $c \in \bb Z$ such that
+  \[b = ac\]
+  and symbolically write $a \mid b$.
+\end{definition}
+
+Now for another fundamental result in elementary number theory.
+
+\begin{theorem}[Division Lemma]
+  For any $a \in \bb Z$ and $b \in \bb N$, there exist unique integers $q$ and $r$ such that
+  \[a = bq + r\]
+  where $0 \leq r < b$.
+\end{theorem}
+\begin{proof}
+  Define the set
+  \[S = \{a - xb : x \in \bb Z \text{ and } a - xb \geq 0\}.\]
+  Set $x = -\abs{a}$. Then,
+  \[a - xb = a - (-\abs{a})b = a + \abs{a}b \geq a + \abs{a} \geq 0.\]
+  Therefore, $S$ is nonempty. Since $S$ is also a subset of $\bb N$, by an extension of the WOP to admit $0$, $S$ has a least element $r \geq 0$. Thus,
+  \[r = a - qb\]
+  for some $q \in \bb Z$. We now assert that $r < b$.
+
+  Assume for contradiction that $r \geq b$. Then,
+  \[r - b = (a - qb) - b = a - (q+1)b \geq 0.\]
+  This means that $r - b$ is an element of $S$ $(\ffi)$, which contradicts the fact that $r$ is the least element of $S$. Therefore, $r < b$.
+
+  We also prove the uniqueness of $q$ and $r$ by contradiction. Assume that there exist integers $q'$ and $r'$ different from $q$ and $r$ respectively such that
+  \[a = qb + r = q'b + r'\]
+  with $0 \leq r, r' < b$. Rearranging the above expression, we have
+  \[(q - q')b = r' - r \imp \abs{q-q'}\abs{b} = \abs{r'-r}.\]
+  Now,
+  \[q \neq q' \imp \abs{q - q'} \geq 1 \imp \abs{r' - r} \geq \abs{b} \tag{$\ffi$}\]
+  which contradicts our assumed bounds on $r$ and $r'$. As such, $q$ and $r$ must be unique.
+\end{proof}
+
+\begin{definition}
+  The \emph{greatest common divisor} (gcd) of two nonzero integers $a$ and $b$ is the unique positive integer $d$ such that
+  \begin{enumerate}
+    \item $d \mid a$ and $d \mid b$, and
+    \item if $c \mid a$ and $c \mid b$ for some $c \in \bb Z$, then $c \mid d$.
+  \end{enumerate}
+  Symbolically, $d = (a, b)$.
+\end{definition}
+
+Equivalently, the gcd of two integers $a$ and $b$ is the largest integer that divides them. The \emph{Euclidean algorithm} (described below) employs the division lemma to find the gcd of two arbitrary integers, along with a proof of termination.
+
+\begin{theorem}[Euclidean Algorithm]
+  Let $a \in \bb Z$ and $b \in \bb N$. There exist integers $q_i$ and $r_i$ for $i \in 1 : k$ such that
+  \begin{alignat*}{2}
+    a &= bq_1 + r_1,             &\qquad 0 &\le r_1 < b, \\
+    b &= r_1q_2 + r_2,           &\qquad 0 &\le r_2 < r_1, \\
+      &\vdotswithin{=}           &       &\vdotswithin{\le} \\
+    r_{k-2} &= r_{k-1}q_k + r_k, &\qquad 0 &\le r_k < r_{k-1}, \\
+    r_{k-1} &= r_kq_{k+1}.       &       &
+  \end{alignat*}
+Then $(a, b) = r_k$.
+\end{theorem}
+\begin{description}
+  \item[Step 1.] Divide $a$ by $b$ to obtain
+  \[a = bq_1 + r_1, \quad 0 \leq r_1 < b.\]
+  \item[Step 2.] If $r_1 = 0$, then $(a, b) = b$. Otherwise, divide $b$ by $r_1$ to get
+  \[b = r_1q_2 + r_2, \quad 0 \leq r_2 < r_1.\]
+  \item[Step 3.] Continue dividing the previous divisor by the remainder until a remainder of $0$ is obtained.
+  \item[Conclusion.] The last nonzero remainder $r_k$ is $(a, b)$.
+\end{description}
+
+\begin{proof}
+  All of the remainders are nonnegative integers:
+  \[b > r_1 > r_2 > \cdots > r_{k-1} > r_k > 0. \]
+  By the WOP, $\bb N$ cannot contain an infinite strictly decreasing sequence, which means the algorithm must terminate after a finite number of steps, with the last remainder being 0.
+\end{proof}
+
+Now for a final result on the properties of natural numbers 
+
+\begin{theorem}[B\'ezout's Lemma]
+  Let $a$ and $b$ be nonzero integers. Then, there exist integers $x$ and $y$ such that
+  \[ax + by = (a, b).\]
+  Furthermore, $(a, b)$ is the smallest positive integer that can be written in this form.
+\end{theorem}
+\begin{proof}
+  Define the set
+  \[S = \{ax + by : x, y \in \bb Z \text{ and } ax + by > 0\}.\]
+  If $a > 0$, then $a \cdot 1 + b \cdot 0 = a \in S$ and if $a < 0$, then $a \cdot (-1) + b \cdot 0 = -a \in S$. If $a = 0$, then $b$ can be similarly picked to match the sign of $y$ for the linear combination to be positive, which means the set is nonempty.
+
+  Since the set is nonempty, by the WOP let $d$ be the least element in $S$. As such, there exist integers $x_0$ and $y_0$ such that
+  \[d = ax_0 + by_0. \tag{$*$}\]
+
+  Now, by the division lemma, we know that there exist integers $q$ and $r$ such that
+  \[a = dq + r \tag{$**$}\]
+  where $0 \leq r < d$. From $(*)$ and $(**)$, we have
+  \[r = a - dq = a - (ax_0 + by_0)q \imp r = a(1 - x_0q) + b(-y_0q).\]
+  Now note that $r$ must be $0$, since if it were not, then it would be an element of $S$, which is not possible since $r < d$, which contradicts the fact that $d$ is the least element of $S$. Since $r = 0$, it follows that $a = dq \imp d \mid a$, and by the same flow of thought, $d \mid b$.
+
+  Let $c$ be an arbitrary divisor of $a$ and $b$, i.e. there exist integers $k$ and $\ell$ such that $a = ck$ and $b = c\ell$. To show that $d = (a,b)$, $c$ must also divide $d$.
+  \[d = ax_0 + by_0 = (ck)x_0 + (c\ell)y_0 = c(kx_0 + \ell y_0) \imp c \mid d.\]
+\end{proof}
+
+\subsection{Relations}
+\begin{definition}
+  Let $X$ be a set. A relation $R$ on $X$ is a subset of the Cartesian product
+  \[X \times X = \{(x,y) : x, y \in X\}.\]
+  If $(x, y) \in R$, we say that \emph{$x$ is related to $y$ by $R$}. Symbolically
+  \[xRy,\]
+  and if there is no ambiguity in the relation, then it is common to write $x \sim y$.
+\end{definition}
+
+We now discuss a few proprties that a relation may possess.
+\begin{definition}
+  Let $X$ be a set and $\sim$ be a relation on $X$. The relation is
+  \begin{enumerate}
+    \item \emph{reflexive} if $x \sim x$ for all $x \in X$,
+    \item \emph{symmetric} if $x \sim y \imp y \sim x$ for all $x, y \in X$, and
+    \item \emph{transitive} if $x \sim y $ and $y \sim z$ imply that $x \sim z$ for all $x, y, z \in X$.
+  \end{enumerate}
+\end{definition}
+
+\begin{definition}
+  A relation that is reflexive, symmetric, and transitive is said to be an \emph{equivalence relation}.
+\end{definition}
+
+Now consider a fundamental equivalence relation.
+\begin{example}
+  Let $n \in \bb N$ with $n \geq 2$. Define a relation $\sim$ on $\bb Z$ by
+  \[x \sim y \iff \text{$x$ and $y$ give the same remainder when divided by $n$},\]
+  or symbolically
+  \[x \sim y \iff n \mid (x-y).\]
+\end{example}
+\begin{description}
+  \item[Reflexivity.] For any $x \in \bb Z$, we have that $x - x = 0$, and since $n \mid 0$, it follows that $x \sim x$.
+  \item[Symmetry.] If $x \sim y$, then $n \mid (x - y) \imp x - y = nk$ for some $k \in \bb Z$. Now, $y - x = n(-k) \imp n \mid (y-x)$, and as such $y \sim x$.
+  \item[Transitivity.]  If $x \sim y$ and $y \sim z$, then there exist integers $k$ and $\ell$ such that $x - y = nk$ and $y - z = n\ell$. Therefore $x - z = (x - y) +(y - z) = n(k + \ell) \imp n \mid (x - z)$.
+\end{description}
+
+\begin{definition}
+  Let $\sim$ be an equivalence relation on a set $X$. For $x \in X$, the \emph{equivalence class of $x$} is defined by
+  \[[x] = \{y \in X : x \sim y\}.\]
+  The set of all equivalence classes is denoted by
+  \[X/{\sim} = \{[x] : x \in X\}.\]
+\end{definition}
+
+\begin{definition}
+  A \emph{partition} of a set $X$ is a collection of nonempty disjoint subsets of $X$ whose union is $X$.
+\end{definition}
+
+\begin{theorem}
+  The equivalence classes of an equivalence relation on a set $X$ form a partition of $X$. Conversely, given a partition of $X$, there exists an equivalence relation whose equivalence classes are exactly the elements of the partition.
+\end{theorem}
+\begin{proof}
+  $(\imp)$ Suppose $\sim$ is an equivalence relation on $X$. Since $\sim$ is reflexive, $x \in [x]$ for every $x \in X$, which means that all equivalence classes are nonempty. Furthermore, for any $x \in X$, it holds that $x \in [x]$, which means that
+  \[\bigcup_{x \in X} [x] = X.\]
+  To show that the equivalence classes are disjoint, assume for contradiction that there exist unique $[x]$ and $[y]$ such that $[x] \cap [y] \neq \nset$. Therefore, there exists an element $z$ of $X$ common to both $[x]$ and $[y]$, i.e. $z \sim x$ and $z \sim y$. By symmetry and transitivity, $x \sim y \imp [x] = [y]$ $(\ffi)$ which contradicts the assumption that $[x] \neq [y]$. As such, equivalence classes are disjoint.
+
+  $(\pmi)$ Given a partition of $S$, define $a \sim b$ iff $a$ and $b$ are in the same subset. Reflexivity, symmetry, and transitivity trivially hold.
+\end{proof}
+\end{document}

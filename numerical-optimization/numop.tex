@@ -68,6 +68,8 @@
   }
 }
 
+\newcommand{\ds}{\displaystyle}
+
 \newcommand{\bb}[1]{\mathbb{#1}}
 \newcommand{\cl}[1]{\mathcal{#1}}
 
@@ -129,7 +131,7 @@
 \section{Preliminaries}
 \subsection{Inner Product Spaces}
 \begin{definition}
-    Let $V$ be a real vector space. A function $\ab{\cdot, \cdot} : V \times V \to \bb R$ is called a \emph{real inner product} if it satisfies the following three properties for $x, y, z \in V$ and $c \in \bb R$:
+    Let $V$ be a real vector space. A function $\ab{\cdot, \cdot} : V \times V \to \bb R$ is called a \emph{real inner product} if it satisfies the following properties for $x, y, z \in V$ and $c \in \bb R$:
     \begin{enumerate}
         \item $\ab{x, y} = \ab{y, x}$,
         \item $\ab{x + z, y} = \ab{x, y} + \ab{z, y}$,
@@ -307,14 +309,53 @@ The definiteness of a matrix may also be realized through its principal minors.
 \end{definition}
 
 \begin{theorem}
-  A matrix is
-  \begin{enumerate}[label=(\alph*), font=\upshape]
-    \item positive definite if all leading principle minors are positive,
-    \item positive semidefinite if all principal minors are nonnegative,
-    \item negative definite if the $k$th leading principal minor has the sign of $(-1)^k$, and
-    \item negative semidefinite if all principal minors of order $k$ either have the sign of $(-1)^k$ or are $0$.
+  A square matrix is
+  \begin{enumerate}[font=\upshape]
+    \item positive definite iff all leading principle minors are positive,
+    \item positive semidefinite iff all principal minors are nonnegative,
+    \item negative definite iff the $k$th leading principal minor has the sign of $(-1)^k$, and
+    \item negative semidefinite iff all principal minors of order $k$ either have the sign of $(-1)^k$ or are $0$.
   \end{enumerate}
   A matrix that does not fall into the aforementioned categories is indefinite.
 \end{theorem}
 
+We may also characterize definiteness using a matrix's eigenvalues.
+\begin{theorem}
+  A square matrix of order $n$ with eigenvalues $\la_i$ for $i \in 1 : n$ is
+  \begin{enumerate}[font=\upshape]
+    \item positive definite iff $\la_i > 0$ for all $i$,
+    \item positive semidefinite iff $\la_i \geq 0$ for all $i$,
+    \item negative definite iff $\la_i < 0$ for all $i$, and
+    \item negative semidefinite iff $\la_i \leq 0$ for all $i$.
+  \end{enumerate}
+  A matrix that does not fall into the aforementioned categories is indefinite.
+\end{theorem}
+
+\subsection{Matrix Norms}
+\begin{definition}
+  Let $\bb R^{m \times n}$ denote the set of all matrices of size $m \times n$ with real entries. A function $\norm{\cdot} : \bb R^{m \times n} \to \bb R$ is called a \emph{real matrix norm} if it satisfies the following properties for $c \in \bb R$ and $A, B \in \bb R^{m \times n}$:
+  \begin{enumerate}
+    \item $\norm{A} \geq 0$ and $\norm{A} = 0 \iff A = \vb 0$,
+    \item $\norm{cA} = \abs{c}\norm{A}$,
+    \item $\norm{A + B} \leq \norm{A} + \norm{B}$, and
+    \item $\norm{AB} \leq \norm{A}\norm{B}$ for $m = n$.
+  \end{enumerate}
+\end{definition}
+
+Four of the most widely used ones are detailed below for a square matrix $A = [a_{ij}]_n$.
+\begin{description}
+  \item[$\boldsymbol{1}$-norm.] The $1$-norm is the \emph{maximum absolute column sum}:
+  \[\norm{A}_1 = \max_{1 \leq j \leq n} \sum_{i=1}^n \abs{a_{ij}}.\]
+  \item[$\boldsymbol{\oo}$-norm.] The $\oo$-norm is the \emph{maximum absolute row sum}:
+  \[\norm{A}_\oo = \max_{1 \leq i \leq n} \sum_{j=1}^n \abs{a_{ij}}.\]
+  \item[$\boldsymbol{2}$-norm.] The $2$-norm is also called the \emph{spectral norm} and is given by
+  \[\norm{A}_2 = \sqrt{\la_{\mathrm{max}}(A^\top A)}\]
+  where $\la_\mathrm{max}(M)$ is the largest eigenvalue of $M$.
+  \item[Frobenius norm.] The Frobenius norm is the sum of the squared entries of the matrix:
+  \[\norm{A}_F = \p{\sum_{i=1}^n\sum_{j=1}^n a_{ij}^2}^{1/2} = \sqrt{\tr(A^\top A)}\]
+  where $\tr(M)$ is the trace of $M$.
+\end{description}
+
+In general, a specific matrix norm can be induced from an existing vector norm by defining
+\[\norm{A} = \sup_{\vb x \neq 0} \f{\norm{A\vb x}}{\norm{\vb x}}.\]
 \end{document}
