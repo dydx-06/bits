@@ -1,0 +1,151 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in, headheight=20pt]{geometry}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{amsthm, amsmath, amssymb}
+\usepackage{mathtools}
+\usepackage[italicdiff]{physics}
+\usepackage{enumitem}
+\usepackage{lmodern}
+\usepackage{fancyhdr}
+\usepackage{pgfornament}
+
+\definecolor{pagecolor}{HTML}{DCE2F0}
+\definecolor{textcolor}{HTML}{373D4A}
+
+\pagecolor{pagecolor}
+\color{textcolor}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Computation of Option Pricing Models}
+\fancyhead[R]{\nouppercase{\leftmark}}
+\fancyfoot[C]{}
+
+\renewcommand{\headrule}{
+  \vspace{-5pt}
+  \hbox to \headwidth{
+    \leaders\hrule height 0.5pt\hfill
+    \hspace{5pt}
+    \raisebox{0.20pt}{\pgfornament[width=1cm]{11}}
+    \hspace{5pt}
+    \leaders\hrule height 0.5pt\hfill
+  }
+}
+
+\renewcommand{\footrule}{
+  \vspace{-12pt}
+  \hbox to \headwidth{
+    \leaders\hrule height 3.5pt depth -3pt \hfill 
+    \hspace{5pt} 
+    \thepage 
+    \hspace{5pt}
+    \leaders\hrule height 3.5pt depth -3pt \hfill
+  }
+}
+
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\headrule}{} 
+  \fancyfoot[C]{}
+  \renewcommand{\footrule}{
+    \vspace{-12pt}
+    \hbox to \headwidth{
+      \rule[0.65ex]{0.47\headwidth}{0.5pt}%
+      \hfill
+      \thepage
+      \hfill
+      \rule[0.65ex]{0.47\headwidth}{0.5pt}%
+    }
+  }
+}
+
+\newcommand{\bb}[1]{\mathbb{#1}}
+\newcommand{\cl}[1]{\mathcal{#1}}
+
+\newcommand{\p}[1]{\left ( #1 \right )}
+\newcommand{\bk}[1]{\left [ #1 \right ]}
+\newcommand{\br}[1]{\left \{ #1 \}}
+\newcommand{\ab}[1]{\langle #1 \rangle}
+
+\newcommand{\f}[2]{\frac{#1}{#2}}
+\newcommand{\nset}{\varnothing}
+\newcommand{\oo}{\infty}
+
+\newcommand{\gm}{\gamma}
+\newcommand{\de}{\delta}
+\newcommand{\De}{\Delta}
+\newcommand{\ep}{\varepsilon}
+\newcommand{\la}{\lambda}
+\newcommand{\si}{\sigma}
+\newcommand{\om}{\omega}
+\newcommand{\Om}{\Omega}
+
+\newcommand{\imp}{\Rightarrow}
+\newcommand{\pmi}{\Leftarrow}
+\renewcommand{\iff}{\Leftrightarrow}
+\newcommand{\ffi}{\Rightarrow\!\Leftarrow}
+
+\setlist[enumerate]{label=(\alph*)}
+
+\newtheoremstyle{boldnote}
+  {}
+  {}
+  {\itshape}
+  {}
+  {\bfseries}
+  {.}
+  { }
+  {\thmname{#1}\thmnumber{ #2}\thmnote{ (\bfseries #3)}}
+\theoremstyle{boldnote}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}{Example}
+
+\title{
+    \textbf{Computation of Option Pricing Models}
+}
+\author{
+  Dhyan Laad \\
+  \texttt{2024ADPS0875G}
+}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Preliminaries}
+\subsection{Terminology}
+\begin{definition}
+    An \emph{option} is a financial derivative that grants the holder the right, but not the obligation to engage in a financial transaction with the underlying asset. A \emph{call option} is the right to buy the underlying asset while the \emph{put option} is the right to sell the underlying asset. A \emph{European option} can only be exercised exactly at expiration date, while an \emph{American option} can be exercised at any stopping time until the expiration date.
+\end{definition}
+
+\begin{definition}
+    The \emph{stock price} or \emph{asset price} (denoted $S_t$) is the value of the underlying asset at a specific time $t$. It is modelled as a stochastic process adapted to a filtration.
+\end{definition}
+
+\begin{definition}
+    The \emph{strike price} or \emph{exercise price} (denoted $E$) of a financial contract is a fixed, pre-determined price at which the holder of a derivative contract can exercise their right to buy or sell the underlying asset.
+\end{definition}
+
+\begin{definition}
+    The \emph{duration} is the remaining lifespan of an option. If the maturity date is $T$, and the current time is $t$, then the duration is defined as $\tau = T - t$.
+\end{definition}
+
+\begin{definition}
+    The \emph{volatility} (denoted $\si$) of a stock is a measure of its uncertainty. If $\De t$ is an arbitrary difference in two times, then the standard deviation of the stock's return in that time difference is given by $\si\sqrt{\De t}$.
+\end{definition}
+
+In addition to these parameters, an option's price is also affected by the risk-free interest rate $r$, and the dividends paid $q$.
+
+\subsection{Market Assumptions}
+\subsubsection{Principle of No Arbitrage}
+In essence the Principle of No Arbitrage stipulates that instant risk-free profit should be impossible, often encapsulated in the saying ``there is no such thing as a free lunch."
+
+\subsubsection{Efficient Market Hypothesis}
+The Efficient Market Hypothesis (EMH) stipulates that an asset's current price fully reflects all available information. Consequently, knowing the historical path of the price provides no advantage in predicting its future movements. This implies that the future evolution of the asset depends solely on its current state, allowing us to model the price as a Markov process.
+\end{document}

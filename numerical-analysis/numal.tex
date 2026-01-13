@@ -74,6 +74,7 @@
 \newcommand{\oo}{\infty}
 \DeclareMathOperator{\fl}{fl}
 \newcommand{\NaN}{\texttt{NaN}}
+\newcommand{\apx}{\approx}
 
 \newcommand{\be}{\beta}
 \newcommand{\gm}{\gamma}
@@ -181,4 +182,32 @@ Another quantitification of how removed an approximation is from its true value 
         \item $\displaystyle \ep \leq \f 12 \be^{-n+1}$ for rounded systems.
     \end{enumerate}
 \end{theorem}
+\begin{proof}
+  Let $x$ be a nonzero real number represented as
+  \[x = m \cdot \be^e = (-1)^s\cdot(0.d_1d_2\dots d_nd_{n+1}\dots)\be^e\]
+  where $d_1 \neq 0$. The smallest possible magnitude for the mantissa is $0.100\dots$ (in base $\be$). Therefore, the bounds on $m$ are
+  \[\f 1\be \leq \abs{m} < 1.\]
+  Since the floating point representation only stores $n$ digits, the last digit stored is $d_n$, which is in the $\be^{-n}$ position relative to the decimal point.
+
+  Now, a chopped system truncates everything after $d_n$, and the absolute error would be given by
+  \[\abs{x - \fl(x)} = 0.\underbrace{00 \dots 0}_{n \text{ zeros}} d_nd_{n+1}\dots \times \be^e < \be^{-n} \times \be^e = \be^{e-n}.\]
+  Now consider the relative error.
+  \[\abs{\ep} = \abs{\f{x - \fl(x)}{x}} < \f{\be^{e-n}}{\abs{m \times \be^e}} = \f{\be^{-n}}{\abs{m}}.\]
+  To find the upper bound, we must minimize the denominator, whose minimum value we previously determined to be $1/\be$, which yields
+  \[\abs{\ep} < \f{\be^{-n}}{1/\be} \imp \ep \leq \be^{-n+1}. \tag{a}\]
+
+  In a rounded system, $\fl(x)$ is the number with $n$ digits closest to $x$. The quantity analogous to a ``least count'' would be $\be^{e-n}$. When rounding, the error cannot exceed half of this value
+  \[\abs{x - \fl(x)} \leq \f 12 \be^{-n} \times \be^e = \f 12 \be^{e-n}.\]
+  Dividing by $x$ yields
+  \[\abs{\ep} = \f{\abs{x - \fl(x)}}{\abs{x}} \leq \f 12 \cdot \f{\be^{-n}}{\abs{m}}.\]
+  Once more, the error is maximized at $\abs{m} = 1/\be$. Therefore,
+  \[\ep \leq \f 12 \be^{-n+1}. \tag{b}\]
+\end{proof}
+
+\subsubsection*{Propogation of Errors}
+When performing the arithmetic operations with approximate quantities, it is important to study the errors in the sum, difference, product, and quotient. Let $x = x^* + \ep$ and $y = y^* + \eta$, where $x$ and $y$ are true real values, and $x^*$ and $y^*$ are their approximations. Let $r_n$ denote the relative error in a quantity $n$. Then,
+\begin{align*}
+  r_{xy} &= \f{xy - x^*y^*}{xy} = \f{xy - (x - \ep)(y - \eta)}{xy} = \f \ep x + \f \eta y - \f{\ep\eta}{xy} \apx r_x + r_y, \\
+  r_{x/y} &= \f{x/y - x^*/y^*}{x/y} = \f{\eta}{y + \eta} - \f{y\ep}{x(y + \eta)} \apx r_y - r_x.
+\end{align*}
 \end{document}
