@@ -13,7 +13,7 @@
 \definecolor{pagecolor}{HTML}{DCE2F0}
 \definecolor{textcolor}{HTML}{373D4A}
 
-\pagecolor{pagecolor}
+% \pagecolor{pagecolor}
 \color{textcolor}
 
 \pagestyle{fancy}
@@ -76,6 +76,7 @@
 \newcommand{\NaN}{\texttt{NaN}}
 \newcommand{\apx}{\approx}
 
+\newcommand{\al}{\alpha}
 \newcommand{\be}{\beta}
 \newcommand{\gm}{\gamma}
 \newcommand{\de}{\delta}
@@ -108,7 +109,11 @@
 
 \theoremstyle{definition}
 \newtheorem{definition}[theorem]{Definition}
-\newtheorem{example}{Example}
+\newtheorem{example}[theorem]{Example}
+\newenvironment{solution}
+  {\begin{proof}[Solution]}
+  {\renewcommand{\qedsymbol}{$\blacksquare$}\end{proof}}
+
 
 \title{
     \textbf{Numerical Analysis} \\
@@ -208,6 +213,49 @@ Another quantitification of how removed an approximation is from its true value 
 When performing the arithmetic operations with approximate quantities, it is important to study the errors in the sum, difference, product, and quotient. Let $x = x^* + \ep$ and $y = y^* + \eta$, where $x$ and $y$ are true real values, and $x^*$ and $y^*$ are their approximations. Let $r_n$ denote the relative error in a quantity $n$. Then,
 \begin{align*}
   r_{xy} &= \f{xy - x^*y^*}{xy} = \f{xy - (x - \ep)(y - \eta)}{xy} = \f \ep x + \f \eta y - \f{\ep\eta}{xy} \apx r_x + r_y, \\
-  r_{x/y} &= \f{x/y - x^*/y^*}{x/y} = \f{\eta}{y + \eta} - \f{y\ep}{x(y + \eta)} \apx r_y - r_x.
+  r_{x/y} &= \f{x(1 + r_x)}{y(1 + r_y)} = \f{1 + r_x}{1 + r_y} - 1 \approx (1 + r_x)(1 - r_y) - 1 \approx r_x - r_y.
 \end{align*}
+These approximations hold for $\abs{r_x}, \abs{r_y} \ll 1$. Errors in addition in subtraction are given by
+\[r_{x \pm y} = r_x\left ( \f{x}{x \pm y}\right ) \pm r_y \left ( \f{y}{x \pm y} \right ).\]
+
+In general, errors propogated through multiplication and division do not propogate rapidly. However, the propogated error in addition and subtraction can be much larger than the relative errors in either $x$ and $y$. This is known as a loss of significance or catastrophic cancellation.
+
+\begin{example}
+  Consider the function
+  \[f : x \mapsto x(\sqrt{x + 1} - \sqrt{x}).\]
+  Evaluate $f(10^5)$ using $6$-digit floating point arithmetic with rounding.
+\end{example}
+\begin{solution}
+  Firstly, compute the floating point forms of the square roots:
+  \begin{align*}
+    \fl(\sqrt{100,001}) &= 3.16229 \times 10^2 \\
+    \fl(\sqrt{100,000}) &= 3.16228 \times 10^2.
+  \end{align*}
+  Taking the difference would yield $0.00001 \times 10^2$. Starting wih $6$ significant digits, we are down to $1$, which is a huge loss in precision. The final result would be
+  \[f(100,000) \apx (1.00000 \times 10^5) \times (1.00000 \times 10^{-3}) = 1.00000 \times 10^2 = 100.\]
+
+  However, the true value of $f(10^5)$ is around 158.113488. To avoid the huge loss in precision, we first manipulate the function to remove the subtraction of two nearly equal quantities:
+  \[f(x) = \f{x}{\sqrt{x + 1} + \sqrt{x}}\]
+  Performing $6$-digit floating point arithmetic on the manipulated function gives $158.114$, which is much closer to the true value.
+\end{solution}
+
+We now consider the propogation of errors through function evaluation. Let $x = x^* + \ep$ where $x \in \bb R$ and $x^*$ is an approximation correct to $n$ significant figures. Let $f : X \to \bb R$ be a smooth function for some subset $X$ of $\bb R$. Using its Taylor series, we have
+\[f(x^* + \ep) = f(x^*) + \ep f'(x^*) + \f{\ep^2}{2}f''(\al)\]
+for some $\al \in [x, x^*]$. The relative error is given by
+\[r_{f(x)} = \f{f(x) - f(x^*)}{f(x)} = \f{\ep f'(x^*) + \ep^2f''(\al)/2}{f(x)} \apx \ep \f{f'(x^*)}{f(x)}.\]
+Assuming that $f(x)$ and $f(x^*)$ are relatively close,
+\[r_{f(x)} \apx \f{\ep}{x} \cdot \f{xf'(x^*)}{f(x^*)} \imp \abs{r_{f(x)}}\apx \abs{r_x} \abs{\f{x^*f'(x^*)}{f(x^*)}}.\]
+
+We also denote
+\[\cl K = \abs{\f{x^*f'(x^*)}{f(x^*)}}\]
+called the \emph{condition number}. If $\cl K$ is nearly $1$, then the error in $f(x)$ is called natural. If it is very large however, then the relative error in the evaluation of $f(x)$ will also be large.
+
+Many numerical methods, especially in linear algebra, involve summations. Quantifying the error propagation in summations becomes an important topic of study. Consider the computation of the sum
+\[S = \sum_{i=1}^m x_i,\]
+where $x_i$ for $i \in 1 : m$ are floating point numbers. Define
+\[S_2 = \fl(x_1 + x_2) = (x_1 + x_2)(1 + \ep_2)\]
+and recusrivelt continue
+\[S_{r+1} = \fl(S_r + x_{r+1}).\]
+Expanding out the $n$th sum and neglecting $\ep_i\ep_j$ for $i, j \in 1 : n$, we get
+\[S_n - (x_1 + x_2 + \cdots + x_n) \apx \sum_{i=1}^n \ep_i \sum_{j=1}^i x_i \apx \sum_{i=2}^n.\]
 \end{document}

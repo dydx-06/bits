@@ -9,11 +9,12 @@
 \usepackage{lmodern}
 \usepackage{fancyhdr}
 \usepackage{pgfornament}
+\usepackage{verbatim}
 
 \definecolor{pagecolor}{HTML}{DCE2F0}
 \definecolor{textcolor}{HTML}{373D4A}
 
-\pagecolor{pagecolor}
+% \pagecolor{pagecolor}
 \color{textcolor}
 
 \pagestyle{fancy}
@@ -63,6 +64,7 @@
 
 \newcommand{\bb}[1]{\mathbb{#1}}
 \newcommand{\cl}[1]{\mathcal{#1}}
+\DeclareMathOperator{\E}{\mathbf{E}}
 
 \newcommand{\p}[1]{\left ( #1 \right )}
 \newcommand{\bk}[1]{\left [ #1 \right ]}
@@ -73,6 +75,7 @@
 \newcommand{\nset}{\varnothing}
 \newcommand{\oo}{\infty}
 
+\newcommand{\del}{\delta}
 \newcommand{\gm}{\gamma}
 \newcommand{\de}{\delta}
 \newcommand{\De}{\Delta}
@@ -118,6 +121,7 @@
 \begin{document}
 \maketitle
 
+\begin{comment}
 \section{Preliminaries}
 \subsection{Terminology}
 \begin{definition}
@@ -129,7 +133,7 @@
 \end{definition}
 
 \begin{definition}
-    The \emph{strike price} or \emph{exercise price} (denoted $E$) of a financial contract is a fixed, pre-determined price at which the holder of a derivative contract can exercise their right to buy or sell the underlying asset.
+    The \emph{strike price} or \emph{exercise price} (denoted $K$) of a financial contract is a fixed, pre-determined price at which the holder of a derivative contract can exercise their right to buy or sell the underlying asset.
 \end{definition}
 
 \begin{definition}
@@ -148,4 +152,39 @@ In essence the Principle of No Arbitrage stipulates that instant risk-free profi
 
 \subsubsection{Efficient Market Hypothesis}
 The Efficient Market Hypothesis (EMH) stipulates that an asset's current price fully reflects all available information. Consequently, knowing the historical path of the price provides no advantage in predicting its future movements. This implies that the future evolution of the asset depends solely on its current state, allowing us to model the price as a Markov process.
+\end{comment}
+
+\section{Fundamentals of Option Pricing}
+Recall that a European put option gives its holder (buyer) the right, but not the obligation, to \emph{sell} a prescribed asset $S$ to the writer (seller) of the option for a strike price $K$ at the maturity date $T$. As such, the fair price $P$ of a European put option at the maturity date is simply given by the payoff:
+\[P_T = P(S_T, T) = \max (K - S_T, 0).\]
+
+Similarly, a European call option gives its holder the right, but not the obligation, to \emph{buy} a prescribed asset $S$ from the writer of the option, and once again fair price $P$ of a European call option at the maturity date is given by the payoff:
+\[P_T = P(S_T, T) = \max (S_T - K, 0).\]
+
+The objective of option pricing is to determine the value of \emph{premium}:
+\[P_0 = P(S_0, 0)\] 
+building on the values of $P_T$. If $P_0$ was simply set to $0$ (no premium on the option), then a call option holder would never take on any risk, and never make a loss. On the other hand, the writer can never turn a profit. The price of the premium must be \emph{fair} to both parties entering the contract.
+
+Our models pretend that we are in a risk-neutral world, where an investor wouldn't mind risk. In this hypothetical world, a risky stop is expected to grow at the exact same rate as a safe investment such as a government bond or a bank account. The \emph{Risk-Neutrality Assumption} is as stated.
+\begin{center}
+  \emph{At any time, the average return on a risky investment of an asset is equal to the return on a risk-free investment of that asset.}
+\end{center}
+
+Under this new assumption,
+\[\E[P_T] = P_0e^{rT}.\]
+And therefore the premium for a European call option would be
+\[P_0 = e^{-rT}\E[\max(S_T-K, 0)].\]
+
+\subsubsection*{Modelling a Risk-Free Asset}
+A bond issued by the government, or accumulating interest in a bank can be regarded as a risk-free asset. If $B_0$ is a risk-free investment at a time $t = 0$, the value of the investment after $m$ years at a rate $r$ would be
+\[B_m = B_0(1 + mr)\]
+if the interest is simple, and
+\[B_m = (1 + r)^mB_0\]
+if compounded anually. Building on the case of compound interest, consider $N$ timestamps $\{t_n : n \in 0 : N\}$ where $t_n = n \del t = n/N$ at which the interest compounds. Then,
+\[\f{B_{t_n} - B_{t_{n-1}}}{B_{t_{n-1}}} = r\del t\]
+for $n \in 1 : N$. Now,
+\[B_T = B_{t_N} = (1 + r\del t)^NB_0 = [(1 + r\del t)^{1/\del t}]^TB_0.\]
+If the interest is compounded continuously, then
+\[B_T = \lim_{\del t \to 0} [(1 + r\del t)^{1/\del t}]^TB_0 = e^{rT}B_0.\]
+
 \end{document}
