@@ -136,6 +136,8 @@
 
 \begin{document}
 \maketitle
+\tableofcontents
+\newpage
 
 \section{Preliminaries}
 
@@ -672,6 +674,7 @@ We now list several important corollaries of Theorem 3.5
   \end{enumerate}
 \end{corollary}
 
+\subsection{Fundamental Theorem of Cyclic Groups}
 \begin{theorem}[Fundamental Theorem of Cyclic Groups]
   Let $G = \ab{a}$ be a cyclic group of order $n$.
   \begin{enumerate}[label=(\roman*), font=\upshape]
@@ -700,7 +703,49 @@ We now list several important corollaries of Theorem 3.5
   Since $\ord(H) = k$, the order of the generator must also be $k$:
   \[\ord(a^m) = \f{n}{(n, m)} = k \imp (n, m) = \f nk.\]
   By Theorem 3.5 (a),
-  \[H = \ab{a^m} = \ab{a^{n, m}} = \ab{a^{n/k}}.\]
+  \[H = \ab{a^m} = \ab{a^{(n, m)}} = \ab{a^{n/k}}.\]
   Since all subgroups of order $k$ are equal to $\ab{a^{n/k}}$, the subgroup of order $k$ is unique.
 \end{proof}
+
+\subsection{Symmetric and Dihedral Groups}
+\begin{definition}
+  A \emph{permutation} of a set $A$ is a bijection $f : A \to A$.
+\end{definition}
+
+Let $S_A$ denote the set of permutations of $A$. It is easy to verify that $S_A$ forms a group under the function composition operation $\circ$. This group is referred to as the \emph{symmetric group} or \emph{permutation group} on $A$.
+
+We typically focus our study on finite order groups where the set $A$ is of the form $\{1, 2, \dots , n\}$, and we denote the group by $S_n$. We denote permuations using matrices. For example, consider the group $S_3$, and the permutation $f$ such that $f(1) = 2$, $f(2) = 3$, and $f(3) = 1$. Then, we write
+\[f = \begin{pmatrix}
+  1 & 2 & 3 \\
+  2 & 3 & 1
+\end{pmatrix}.\]
+
+\begin{example}
+  List all elements of the symmetric group $S_3$.
+\end{example}
+\begin{solution}
+  \begin{align*}
+    a &= \begin{pmatrix} 1 & 2 & 3 \\ 2 & 3 & 1 \end{pmatrix}, & 
+    a^2 &= \begin{pmatrix} 1 & 2 & 3 \\ 3 & 1 & 2 \end{pmatrix}, & 
+    b &= \begin{pmatrix} 1 & 2 & 3 \\ 1 & 3 & 2 \end{pmatrix}, \\[10pt]
+    ab &= \begin{pmatrix} 1 & 2 & 3 \\ 2 & 1 & 3 \end{pmatrix}, & 
+    ba &= \begin{pmatrix} 1 & 2 & 3 \\ 3 & 2 & 1 \end{pmatrix}, & 
+    e &= \begin{pmatrix} 1 & 2 & 3 \\ 1 & 2 & 3 \end{pmatrix}.
+\end{align*}
+\end{solution}
+
+The order of $S_n$ is trivially $n!$, and when $n \geq 3$, it is Nonabelian.
+
+Now, consider a square whose vertices are labelled $\{1, 2, 3, 4\}$ clockwise, and define the following transformations:
+\begin{itemize}
+  \item $r$: rotation by $90^\circ$ clockwise.
+  \item $s$: reflect across a vertical axis.
+\end{itemize}
+The symmetries of a square under these operations form a group
+\[D_4 = \{e, r, r^2, r^3, s, sr, sr^2, sr^3\}\]
+called the dihedral group of order $4$.
+\begin{definition}
+  A \emph{dihedral group} of order $2n$ is the group of symmetrised of a regular $n$-gon. Symbolically,
+  \[D_{2n} = \ab{r, s \mid r^n = 1, s^2 = 1, srs = r^{-1}}.\]
+\end{definition}
 \end{document}
