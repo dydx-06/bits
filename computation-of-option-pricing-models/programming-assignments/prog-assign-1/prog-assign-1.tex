@@ -1,0 +1,119 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in, headheight=20pt]{geometry}
+\usepackage{graphicx}
+\usepackage{amsthm, amsmath, amssymb}
+\usepackage{lmodern}
+\usepackage{parskip}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{mygreen}{RGB}{28,172,0}
+\definecolor{mylilas}{RGB}{170,55,241}
+
+\definecolor{mygreen}{RGB}{28,172,0}
+\definecolor{mylilas}{RGB}{170,55,241}
+\definecolor{lightgray}{gray}{0.98}
+
+\lstset{
+    language=Matlab,
+    backgroundcolor=\color{lightgray},
+    frame=single,
+    rulecolor=\color{black},
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    keywordstyle=\color{blue},
+    commentstyle=\color{mygreen},
+    stringstyle=\color{mylilas},
+    numbers=left,
+    numberstyle={\tiny \color{black}},
+    stepnumber=1,
+    numbersep=9pt,
+    showstringspaces=false
+}
+
+\newtheoremstyle{boldnote}
+  {}
+  {}
+  {\itshape} 
+  {}
+  {\bfseries}
+  {.}
+  { }
+  {\thmname{#1}}
+\theoremstyle{boldnote}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}{Example}
+
+\title{
+    \textbf{Computation of Option Pricing Models} \\
+    \textbf{Programming Assignment 1}
+}
+\author{
+  Dhyan Laad \\
+  \texttt{2024ADPS0875G}
+}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{enumerate}
+  \item This script calculates and plots the payoff for two call options. It sets two strike prices ($\$ 2$ and $\$ 4$) and evaluates the result across a range of asset values from 0 to 6. The calculation subtracts the value of a call option at the higher price from one at the lower price, creating a graph that starts at zero, rises linearly between the two thresholds, and then caps at a fixed maximum value.
+  \begin{center}
+    \includegraphics[width=0.375\textwidth]{fig1.pdf}
+  \end{center}
+
+  \item This script compares the growth of an investment using two different methods: monthly compound interest and continuous compound interest. It defines an initial value of 5 and an interest rate of 15\% over a 5-year period. The calculation generates discrete data points for monthly compounding and overlays them with a smooth curve representing continuous compounding to visualize the relationship between the two growth models.
+  \begin{center}
+    \includegraphics[width=0.375\textwidth]{fig2.pdf}
+  \end{center}
+
+  \item This script generates a 3D visualization of the normal distribution probability density function. It sets the mean to zero and evaluates the distribution across a grid where the standard deviation varies from 1 to 5. The calculation computes the density values for each combination, and the resulting waterfall plot illustrates how the bell curve flattens and spreads out as the standard deviation increases.
+  \begin{center}
+    \includegraphics[width=0.375\textwidth]{fig3.pdf}
+  \end{center}
+
+  What follows is the \textsc{Matlab} code for the exponential density function:
+  \[f(x) =
+  \begin{cases}
+    e^{-\lambda x} & x > 0, \\
+    0 & x \leq 0.
+  \end{cases}
+  \]
+
+  \begin{lstlisting}
+    clf
+
+    dlambda = 0.25;
+    dx = 0.1;
+    [X, LAMBDA] = meshgrid(0:dx:6, 0.5:dlambda:3);
+
+    f(x) = lambda * e^(-lambda * x)
+    Z = LAMBDA .* exp(-LAMBDA .* X);
+
+    waterfall(X, LAMBDA, Z)
+    xlabel('x')
+    ylabel('\lambda')
+    zlabel('f(x)')
+    title('Exponential density for various \lambda')
+  \end{lstlisting}
+
+  And the associated plot.
+
+  \begin{center}
+    \includegraphics[width=0.375\textwidth]{fig4.pdf}
+  \end{center}
+
+  \item This script illustrates the central limit theorem (CLT) using a Monte Carlo simulation. It performs $M=10,000$ experiments, where each experiment calculates the standardized sum of $n=500$ independent random variables drawn from a non-normal distribution. The code aggregates these standardized sums into vector $S$ and plots a normalized histogram to represent the empirical probability density. Finally, it superimposes the theoretical standard normal density function, $\mathcal{N}(0,1)$, as a red curve to visually demonstrate that the distribution of the sums converges to a normal distribution.
+  
+   \begin{center}
+    \includegraphics[width=0.375\textwidth]{fig5.pdf}
+  \end{center}
+  
+
+\end{enumerate}
+\end{document}

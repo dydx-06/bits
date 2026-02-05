@@ -104,6 +104,7 @@
 
 \DeclareMathOperator{\Var}{Var}
 \DeclareMathOperator{\std}{std}
+\newcommand{\pd}{\partial}
 
 % \renewcommand{\bar}[1]{\overline{#1}}
 
@@ -428,8 +429,9 @@ These integrals exist \emph{a.s.} with the first one being a standard Riemann in
 
 An asset's expected return rate and volatility is rarely known to us, and must be estimated. Given an asset price $S$ at $n+1$ equal time steps $\De t$ $\{S_0, S_1, \dots , S_n\}$ in chronological order, we may estimate the expected rate of return
 \[\bar{\mu} = \f{1}{n \De t} \sum_{i=0}^n \f{S_{i+1} - S_i}{S_i},\]
-and the historical volatility
+and the historical volatility is defined as the square root of the sample variance given by
 \[\bar{\si}^2 = \f{1}{(n-1)\De t} \sum_{i=0}^{n-1} \p{\f{S_{i+1} - S_i}{S_i - \bar{\mu}}}^2.\]
+Historical volatility is not a useful metric for our models. More sophisticated methods for estimating the volatility will be discussed later.
 
 \subsection{It\^o's Lemma}
 It\^o's lemma can be viewed as the stochastic equivalent of the chain rule from naive calculus. We explore a specific case of it here, relevant to option pricing.
@@ -470,4 +472,109 @@ Exponentiating we get,
 Since $W_t \sim \cl N(0, t)$, it follows that
 \[\log S_t \sim \cl N \p{\log S_0 + \p{\mu - \f 12 \si^2}t, \si^2t}.\]
 As such, $S_t$ is lognormally distributed.
+
+Due to the lognormal distribution of $S_t$, we measure returns in a complimentary structure. The \emph{daily log-return} of the stock $S_t$ is defined as
+\[r_t = \log \p{\f{S_t}{S_{t-1}}}.\]
+where $t$ is measured in days. Given $n$ log returns $r_i$ for $i \in 1 : n$, the sample mean is defined as
+\[\bar{r} = \f 1n \sum_{t=1}^n r_t\]
+and sample variance
+\[\hat{\si}^2_{\mathrm{daily}} = \f 1{n-1}\sum_{t=1}^n (r_t - \bar{r})^2,\]
+the square root of which is the daily volatility.
+
+Indian equity markets have approximately 252 trading days a year, and the \emph{annualized volatility} is
+\[\hat{\si}_{\mathrm{annual}} = \sqrt{252}\hat{\si}_{\mathrm{daily}}.\]
+
+The \emph{rolling volatility} calculates the volatility of an asset's price movements over a specified period. It measures the degree of variation in the price series over time, and provides insights into the market's potential price fluctuations. For a window of size $m$,
+\[\hat{\si}_t = \sqrt{252}\std\{r_{t-m+1}, r_{t-m+2}, \dots r_t\}.\]
+
+\section{Partial Differential Equations}
+
+\subsection{Deriving the Black-Scholes Equation}
+We now proceed to derive the Black-Scholes equation, the solution to which is the basis for models for fair option pricing. Recall the geometric brownian motion stochastic differential equation that governs stock trends:
+\[\dd{S_t} = \mu S \dd{t} + \si S \dd{W_t},\]
+and let $V \in C^{1, 2}([0, T) \times \bb R^+)$ be the price of an option depending on the time $t \in [0, T)$ and asset price $S_t \in \bb R^+$.
+
+Using It\^o's lemma:
+\[\dd{V} = \p{\pdv{V}{t} + \mu S \pdv{V}{S} + \f 12 \si^2 S^2 \pdv[2]{V}{S}} \dd{t} + \si S \pdv{V}{S}\dd{W_t}.\]
+We now define a portfolio $\Pi$:
+\[\Pi(t) = V(t, S(t)) - \De S(t),\]
+where $\De$ is the number of assets held. The goal of the choice portfolio is to find a suitable value of $\De$ such that the randomness due to $\dd{W_t}$ is eliminated. We assume the portfolio is \emph{self-financing}:
+\[\dd{\Pi} = \dd{V} - \De \dd{S}.\]
+That is to say, all changes are financed internally. Substuting our values of $\dd{V}$ and $\dd{S}$ into the above equation,
+\[\dd{\Pi} = \p{\pdv{V}{t} + \mu S \pdv{V}{S} + \f 12 \si^2 S^2 \pdv[2]{V}{S}} \dd{t} + \si S \pdv{V}{S}\dd{W_t} - \De (\mu S \dd{t} + \si S \dd{W_t}).\]
+The coefficient of $\dd{W_t}$ is given by
+\[\si S \pdv{V}{S} - \De \si S.\]
+We may eliminate the stochastic part of the equation by simply setting this to $0$:
+\[\De = \pdv{V}{S}.\]
+The equation is now entirely deterministic:
+\[\dd{\Pi} = \p{\pdv{V}{t} + \f 12 \si^2 S^2 \pdv[2]{V}{S}}\dd{t}\]
+We now appeal to the principle of no arbitrage. If the same portfolio value was invested in a risk-free manner at rate $r$, we have
+\[\dd{\Pi} = r\Pi \dd{t}.\]
+From our now chosen value of $\De$, we have
+\[\Pi = V - S\pdv{V}{S},\]
+and obtain
+\[\pdv{V}{t} + \f 12 \si^2 S^2 {\pdv[2]{V}{S}} = r\p{V - S \pdv{V}{S}}. \]
+Rearranging, we get the Black-Scholes partial differential equation:
+\[\pdv{V}{t} + \f 12 \si^2 S^2 {\pdv[2]{V}{S}} + rS\pdv{S}{V} - rV = 0,\]
+along with the terminal condition
+\[V(T, S_T) = \Phi(S_T) = \begin{cases}
+  \max(S_T - K, 0) & \text{European call}, \\
+  \max(K - S_T, 0) & \text{European put}.
+\end{cases}\]
+
+It is interesting to observe that the drift $\mu$ disappears from the equation, and only the volatility $\si$ affects option prices. Pricing depends on hedging, not on the expected return.
+
+\begin{definition}
+  \emph{Hedging} is the practice of taking a position in one market to offset and balance against the risk adopted by assuming a position in a contrary or opposing market or investment. A \emph{hedge} is an investment position intended to offset potential losses or gains that may be incurred by a companion investment.
+\end{definition}
+
+\subsection{Introduction to Partial Differential Equations}
+\begin{definition}
+  The \emph{order} of a partial differential equation (PDE) is the total order of highest derivative the occurs in it.
+\end{definition}
+
+\begin{definition}
+  A PDE is said to be \emph{linear} if it is linear in the unknown function and derivatives. A PDE that is not linear is called \emph{nonlinear}.
+\end{definition}
+
+Alternatively if $L$ is an operator for the PDE
+\[L(u) = f,\]
+then $L$ is linear if
+\begin{enumerate}
+  \item $L(u + v) = L(u) + L(v)$, and
+  \item $L(tu) = t L(u)$ for a constant $t$.
+\end{enumerate}
+
+In order for a PDE to have a unique solution, additional conditions on the solution in the form of initial conditions or boundary conditions, or some combination thereof need to be imposed on the solution. A linear boundary value problem (BVP) or initial value problem (IVP) will have the PDE and the associated boundary or initial conditions linear.
+
+\begin{definition}
+  A \emph{well-posed problem} consists of a PDE and associated boundary or initial conditions and satisfies the Hadamard criteria.
+  \begin{description}
+    \item[Existence.] It has a solution.
+    \item[Uniqueness] The solution is unique.
+    \item[Continuous Dependence.] The solution depends continuously on the associated independent variables.   
+  \end{description}
+\end{definition}
+
+We will restrict our study to well-posed problems.
+
+\subsection{Classification of Second Order Partial Differential Equations}
+
+Consier a general second order algebraic equation in two variables with real coefficients:
+\[ax^2 + 2bxy + cy^2 + dx + ey + f = 0.\]
+
+The nature of the curve in $\bb R^3$ plotted by the \emph{principal part} $P(x, y) = ax^2 + 2bxy + cy^2$ depends on the sign on $b^2 - ac$.
+\begin{enumerate}[label=\arabic*.]
+  \item If $b^2 - ac > 0$, the curve is \emph{hyperbolic}.
+  \item If $b^2 - ac = 0$, the curve is \emph{parabolic}.
+  \item If $b^2 - ac < 0$, the curve is \emph{elliptical}.
+\end{enumerate}
+
+With a suitable coordinate transformation $(x, y) \mapsto (X, Y)$ depending on the roots of $P(x, y) = 0$, the equation may be written in its \emph{normal form} or \emph{canonical form}, mimicing the standard equations of the conic sections on $\bb R^2$.
+
+Now consider a second order linear PDE in two variables with constant and real coefficients:
+\[au_{xx} + 2bu_{xy} + cu_{yy} + du_x + eu_y + fu + g = 0.\]
+The nature of the PDE will be once again determined by the principal part $P(\pd_x, \pd_y)u$ where
+\[P(\pd_x, \pd_y) = P\p{\pdv{}{x}, \pdv{}{y}} = a{\pdv[2]{}{x}} + 2b\pdv[2]{}{x}{y} + c{\pdv[2]{}{y}}.\]
+The PDE would be \emph{hyperbolic} if $b^2 - ac > 0$, \emph{parabolic} of $b^2 - ac = 0$, and \emph{elliptic} if $b^2 - ac < 0$.
 \end{document}

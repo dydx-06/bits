@@ -4,13 +4,14 @@
 \usepackage{tikz}
 \usepackage{pgfplots}
 \usepackage{eso-pic}
-\usepackage{amsthm, amsmath, amssymb}
+\usepackage{amsmath, amsthm, amssymb}
 \usepackage{mathtools}
 \usepackage[italicdiff]{physics}
 \usepackage{enumitem}
 \usepackage{lmodern}
 \usepackage{fancyhdr}
 \usepackage{pgfornament}
+\usepackage{parskip}
 
 \definecolor{pagecolor}{HTML}{DCE2F0}
 \definecolor{textcolor}{HTML}{373D4A}
@@ -22,6 +23,17 @@
 
 \pagecolor{pagecolor}
 \color{textcolor}
+
+\AddToShipoutPictureBG{
+  \begin{tikzpicture}[remember picture, overlay]
+    \draw[
+      line width=0.5pt,
+      color=textcolor,
+      opacity=0.075
+    ]
+    (current page.south west) grid[step=10pt] (current page.north east);
+  \end{tikzpicture}
+}
 
 \pagestyle{fancy}
 \fancyhf{}
@@ -127,6 +139,8 @@
 
 \begin{document}
 \maketitle
+\tableofcontents
+\newpage
 
 \section{Preliminaries}
 \subsection{Inner Product Spaces}
@@ -358,4 +372,58 @@ Four of the most widely used ones are detailed below for a square matrix $A = [a
 
 In general, a specific matrix norm can be induced from an existing vector norm by defining
 \[\norm{A} = \sup_{\vb x \neq 0} \f{\norm{A\vb x}}{\norm{\vb x}}.\]
+
+\section{Calculus}
+
+\subsection{Extreme Points}
+We start by reviewing and defining the concepts of a minimum and maximum from elementary calculus. Let $I = [a, b] \subset \bb R$ and $f : I \to \bb R$.
+
+\begin{definition}
+  $x^* \in I$ is said to be a \emph{local minimum} of $f$ if there exists $\de > 0$ such that $f(x^*) \leq f(x)$ for all $x \in B(x^*, \de)$.
+\end{definition}
+
+\begin{definition}
+  $x^* \in I$ is said to be a \emph{local maximum} of $f$ if there exists $\de > 0$ such that $f(x^*) \geq f(x)$ for all $x \in B(x^*, \de)$.
+\end{definition}
+
+\begin{definition}
+  $x^* \in I$ is said to be a \emph{global minimum} of $f$ if $f(x^*) \leq f(x)$ for all $x \in I$.
+\end{definition}
+
+\begin{definition}
+  $x^* \in I$ is said to be a \emph{global maximum} of $f$ if $f(x^*) \geq f(x)$ for all $x \in I$.
+\end{definition}
+
+The definitions for the corresponding strict versions of the maxima and minima may be obtained by simply replacing the inequality with a strict one. The point $x^*$ is called a \emph{minimizer} of \emph{maximizer}.
+
+\begin{theorem}
+  Let $x^*$ be a local minimizer of $f$ and let $x^*$ be an interior point of $I = [a, b]$. If $f$ is differentiable at $x^*$, then $f'(x^*) = 0$.
+\end{theorem}
+\begin{proof}
+  Since $x^*$ is a local minimizer and an interior point of $I$, there exists $\de > 0$ such that $f(x^*) \leq f(x)$ for all $x \in B(x^*, \de)$. For $h > 0$ such that $h < \de$,
+  \[f(x^*) \leq f(x^* + h) \quad \text{and} \quad f(x^*) \leq f(x^* + h). \]
+  We know that $f$ is differentiable at $x^*$. As such,
+  \begin{align*}
+    f'(x^*) &= f_+'(x^*) = \lim_{h \to 0^+} \f{f(x^* + h) - f(x^*)}{h}, \\
+    f'(x^*) &= f_-'(x^*) = \lim_{h \to 0^+} \f{f(x^*) - f(x^* - h)}{h}.
+  \end{align*}
+  As such, $f'(x^*) = f_+'(x^*) \geq 0$ and $f'(x^*) = f_-'(x^*) \leq 0$, and therefore $f'(x^*) = 0$.
+\end{proof}
+
+An analogous result holds for a maximizer.
+\begin{theorem}
+  Let $x^*$ be a local maximizer of $f$ and let $x^*$ be an interior point of $I = [a, b]$. If $f$ is differentiable at $x^*$, then $f'(x^*) = 0$.
+\end{theorem}
+
+\begin{definition}
+  Let $f : [a, b] \to \bb R$, and $x^* \in (a, b)$. If $f$ is differentiable at $x^*$ and $f'(x^*) = 0$, or if $f$ is not differentiable at $x^*$, it is said to be a \emph{critical point of $f$}.
+\end{definition}
+
+\begin{definition}
+  Let $f : [a, b] \to \bb R$, and $x^* \in (a, b)$. If $f$ is differentiable at $x^*$ and $f'(x^*) = 0$, then it is said to be a \emph{stationary point of $f$}.
+\end{definition}
+
+\begin{theorem}
+  
+\end{theorem}
 \end{document}

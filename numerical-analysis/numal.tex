@@ -2,6 +2,7 @@
 \usepackage[margin=1in, headheight=20pt]{geometry}
 \usepackage{xcolor}
 \usepackage{tikz}
+\usepackage{eso-pic}
 \usepackage{amsthm, amsmath, amssymb}
 \usepackage{mathtools}
 \usepackage[italicdiff]{physics}
@@ -9,16 +10,30 @@
 \usepackage{lmodern}
 \usepackage{fancyhdr}
 \usepackage{pgfornament}
+\usepackage{parskip}
+\usepackage{clrscode3e}
 
 \definecolor{pagecolor}{HTML}{DCE2F0}
 \definecolor{textcolor}{HTML}{373D4A}
 
-% \pagecolor{pagecolor}
+\pagecolor{pagecolor}
 \color{textcolor}
+
+\AddToShipoutPictureBG{
+  \begin{tikzpicture}[remember picture, overlay]
+    \draw[
+      line width=0.5pt,
+      color=textcolor,
+      opacity=0.075
+    ]
+    (current page.south west) grid[step=10pt] (current page.north east);
+  \end{tikzpicture}
+}
+
 
 \pagestyle{fancy}
 \fancyhf{}
-\fancyhead[L]{Numerical Optimization}
+\fancyhead[L]{Numerical Analysis}
 \fancyhead[R]{\nouppercase{\leftmark}}
 \fancyfoot[C]{}
 
@@ -125,9 +140,12 @@
 \date{}
 
 \begin{document}
-\maketitle
 
-\section{Introduction to Computation}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Error Analysis}
 \subsection{Floating Point Forms}
 A real number may potentially have an infinite decimal expansion, but computers are limited by hardware, and as such store numbers with a terminating approximation.
 
@@ -254,8 +272,87 @@ Many numerical methods, especially in linear algebra, involve summations. Quanti
 \[S = \sum_{i=1}^m x_i,\]
 where $x_i$ for $i \in 1 : m$ are floating point numbers. Define
 \[S_2 = \fl(x_1 + x_2) = (x_1 + x_2)(1 + \ep_2)\]
-and recusrivelt continue
+and recusrively continue
 \[S_{r+1} = \fl(S_r + x_{r+1}).\]
 Expanding out the $n$th sum and neglecting $\ep_i\ep_j$ for $i, j \in 1 : n$, we get
-\[S_n - (x_1 + x_2 + \cdots + x_n) \apx \sum_{i=1}^n \ep_i \sum_{j=1}^i x_i \apx \sum_{i=2}^n.\]
+\[S_n - (x_1 + x_2 + \cdots + x_n) \apx \sum_{i=1}^n \ep_i \sum_{j=1}^i x_i = \sum_{j=1}^n x_n\sum_{i=j}^n \ep_n.\]
+
+\begin{example}
+  Evaluate the polynomial
+  \[f(x) = 1.107x^3 + 0.3129x^2 - 0.0172x + 1.1075\]
+  for $x = 0.1234$ in nested form using $5$-digit floating point arithmetic with rounding.
+\end{example}
+\begin{solution}
+  The polynomial is bracketed as
+  \[f(x) = ((1.107x + 0.3129)x - 0.0172)x + 1.1075\]
+  and evaluated from the inside-out according to the rules of 5-digit floating point arithmetic. This yields
+  \[f(0.1234) \approx 1.1122.\]
+\end{solution}
+
+\section{Finding Roots for Nonlinear Equations}
+
+Finding the roots of
+\[f(x) = 0\]
+for an arbitrary $f$ (polynomial or transcendental function) is critical to many scientific and engineering fields. This section talks about various methods to find roots.
+
+\begin{definition}
+  A function $f : R \to \bb R$ is said to be a real \emph{polynomial} if
+  \[f(x) = a_nx^n + a_{n-1}x^{n-1} + \cdots + a_1x^1 + a_0\]
+  for a fixed $n \in \bb N$, called its \emph{degree}.
+\end{definition}
+
+A real polynomial always has $n$ complex roots, up to repitition.
+
+\begin{definition}
+  A function $f : X \to \bb R$ is said to be \emph{transcendental} if its closed form contains trigonometric, exponential, or logarthmic functions.
+\end{definition}
+
+It is possible to construct algorithms that find roots of transcendental or polynomial equations, especially when it is not possible or impractical to find closed form roots. These algorithms are divided into two categories:
+\begin{enumerate}
+  \item simple enclosure methods, and
+  \item fixed point iteration schemes.
+\end{enumerate}
+Simple closure methods are based on the intermediate value theorem (IVT) described below, and work by finding an interval that surely contains a root and shrinking it systematically.
+
+\begin{theorem}[Intermediate Value Theorem]
+  Let $f$ be a continuous function on $[a, b]$, and let $K \in \bb R$ be a real number in between $f(a)$ and $f(b)$. Then, there exists $c \in (a, b)$ such that
+  \[f(c) = K.\]
+\end{theorem}
+
+\subsection{Bisection Method}
+The simplest method is to cut the interval in half, determine which new subinterval contains a root utilizing the IVT, and repeat the process to a desired accuracy. This is fundamentally the \emph{bisection method}.
+
+\begin{theorem}
+  Let $f$ be a continuous function on $[a, b]$, and suppose $f(a)f(b) < 0$. The bisection method loosely defined above generates a sequence $\{p_n\} \to p \in (a, b)$ such that $f(p) = 0$ that satisfies
+  \[\abs{p_n - p} \leq \f{b-a}{2^n}.\] 
+\end{theorem}
+
+Since $2^{-n} \to 0$, it follows that $\{p_n\} \to p$. We omit the formal proof here due to triviality, and focus on analyzing the \emph{rate of convergence}.
+
+\begin{definition}
+  Let $\{p_n\} \to p$. If there exists a sequence $\{\be\} \to 0$ and a positive constant $\la$ such that
+  \[\abs{p_n - p} \leq \la \abs{\be_n},\]
+  for sufficiently large values of $n$, then $\{p_n\}$ is said to converge to $p$ with \emph{rate of convergence} $O(\be_n)$.
+\end{definition}
+
+It is important for all algorithms to possess a stopping criterion, i.e. they need to end in a finite number of steps. The following implementation hard codes this cap if the root isn't within the tolerance range.
+
+\begin{codebox}
+\Procname{$\proc{Bisection Method }(f, a, b, \id{tol}, N)$}
+\li \If $f(a) \cdot f(b) \geq 0$
+\li     \Then \Error ``The root is not bracketed."
+    \End
+\li \For $j \gets 1$ \To $N$
+\li     \Do $c \gets (a + b)/2$
+\li         \If $|f(c)| < \id{tol}$
+\li             \Then \Return $c$ \Comment{Convergence criterion met}
+            \End
+\li         \If $f(a) \cdot f(c) < 0$
+\li             \Then $b \gets c$ \Comment{Root is in left half}
+\li             \Else $a \gets c$ \Comment{Root is in right half}
+            \End
+    \End
+\li \Return $c$ \Comment{Best approximation after $N$ iterations}
+\end{codebox}
+\emph{Bracketing} refers to bounding the root between a positive and negative number.
 \end{document}
