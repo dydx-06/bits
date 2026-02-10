@@ -1,0 +1,186 @@
+\documentclass[11pt, a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\usepackage{amsmath, amsfonts, amsthm, amssymb}       
+\usepackage{mathtools}
+\usepackage[italicdiff]{physics}
+\usepackage{bm}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{parskip}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+
+\usepackage[style=numeric, sorting=nyt, backend=biber]{biblatex}
+\addbibresource{references.bib}
+
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{cleveref}
+\crefname{equation}{Equation}{Equations}
+
+\newcommand{\bb}[1]{\mathbb{#1}}
+\newcommand{\cl}[1]{\mathcal{#1}}
+\newcommand{\f}[2]{\frac{#1}{#2}}
+\newcommand{\oo}{\infty}
+\newcommand{\hil}{\cl L_2(\Xi, \rho)}
+\newcommand{\sob}{\cl H_s(\Xi, \rho)}
+\DeclareMathOperator{\D}{D_{0,\textit{t}}^\alpha}
+
+\title{Stochastic Galerkin Method for a Linear Fractional Boundary Value Problem}
+\author{Dhyan Laad \& Vaibhav Mehandiratta}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Outline of the Problem}
+This section describes the problem and surrounding mathematics.
+
+\subsection{Fractional Boundary Value Problem}
+We use the operator \(\D\) to notate the Caputo fractional derivative. Let \(f : [a, b] \to \bb R\) such that \(f \in AC^n[a, b]\), \(\alpha \in \bb R\), and \(n = \lceil \alpha \rceil\). Then,
+\[\D f(t) = \f 1{\Gamma (n - \alpha)} \int_0^t \f{f^{(n)}(\tau)}{(t - \tau)^{\alpha - n + 1}}\dd{\tau}.\]
+The Caputo fractional derivative extends the familiar properties of the derivative to fractional orders. With this in mind, we may pose differential equations with fractional orders (FDEs). Let \(\Xi\) be a compact subset of \(\bb R\) and \(a : \Xi \to \bb R\) a measurable function (additional assumptions will be imposed on \(a\) in Section 2.1). For \(\alpha \in (1, 2)\) consider the following FDE:
+\[\D y(t, \xi) = a(\xi)y(t, \xi). \tag{1} \label{fde}\]
+With solution \(y : [0, 1] \times \Xi \to \bb R\) and boundary conditions
+\[y(0, \xi) = y_0(\xi) \quad \text{and} \quad y(1, \xi) = y_1(\xi), \tag{2} \label{bound}\]
+this forms a boundary value problem (BVP).
+
+The solution to the FDE \labelcref{fde} can be expressed in terms of the 2-parameter family of Mittag-Leffler functions
+\[E_{\alpha, \beta}(z) = \sum_{k=0}^{\oo} \f{z^k}{\Gamma (\alpha k + \beta)}, \quad (z \in \bb C).\]
+As derived in \cite[Theorem 5.12]{kilbas2006theory},
+\[y(t, \xi) = c_0(\xi)E_{\alpha,1}(a(\xi),t^{\alpha}) + c_1(\xi)E_{\alpha, 2}(a(\xi)t^{\alpha}) \tag{3} \label{sol}\]
+where the coefficient functions can be computed given boundary conditions \labelcref{bound} as
+\[c_0(\xi) = y_0(\xi) \quad \text{and} \quad c_1(\xi) = \f{y_1(\xi) - y_0(\xi)E_{\alpha, 1}(a(\xi))}{E_{\alpha, 2}(a(\xi))}.\]
+
+\subsection{Stochastic Modeling}
+We now model the parameter \(\xi\) as a random variable \(\xi : \Omega \to \Xi\) on a probability space \((\Omega, \cl F, P)\) as described in \cite[Section 2.2]{pulch2025stochastic}. Given a measurable function \(f : \Xi \to \bb R\), the expected value would be
+\[E(f(\xi)) \coloneqq \int_{\Omega} f(\xi(\omega))\dd{P(\omega)}.\]
+Our study is restricted to the case of continuous \(P\), which admits a density function \(\rho\). It follows that
+\[E(f(\xi)) = \int_{\Xi} f(\xi')\rho(\xi')\dd{\xi'}.\]
+We may now define an inner product
+\[\langle f, g \rangle \coloneqq E(f(\xi)g(\xi)) = \int_{\Xi} f(\xi')g(\xi')\rho(\xi')\dd{\xi'}\]
+for two measurable functions \(f\) and \(g\), and the associated Hilbert space
+\[\hil \coloneqq \{f : \Xi \to \bb R \mid \text{\(f\) is measurable and \(E(f(\xi)^2) < \oo\)}\}\]
+with norm \(\norm{f}_{\hil} = \sqrt{\langle f, f \rangle}\). An orthonormal basis \(\{\Phi_n\}\) for the Hilbert space can be constructed consisting of polynomials \(\Phi_n : \Xi \to \bb R\) for each \(n \in \bb N_0\) via the Gram-Schmidt process. While most distributions are associated with a complete set of basis polynomials, exceptions do exist (as is the case with the log-normal distribution). For the following analysis, we assume that the distribution of \(\xi\) admits a complete basis.
+
+The generalized polynomial chaos (gPC) expansion of a function $f \in \hil$ is given by
+\[f(\xi) = \sum_{k=0}^\oo a_k\Phi_k(\xi) \]
+where \(a_k = \langle f, \Phi_k\rangle\) for every \(k \in \bb N_0\). Since \(\xi\) is modeled to be a random variable, the solution \labelcref{sol} becomes a stochastic process. Assuming \(y(t, \cdot) \in \hil\), it possesses a gPC expansion
+\[y(t, \xi) = \sum_{k=0}^\oo \hat{v}_k(t)\Phi_k(\xi) \tag{4} \label{gpc}\]
+for all \(t \in [0, 1]\) with coefficient functions \(\hat{v}_k : [0, 1] \to \bb R\) for every \(k \in \bb N_0\). Define the \(n\)th partial sum of \labelcref{gpc} to be
+\[\hat{y}^{(n)}(t, \xi) \coloneqq \sum_{k=0}^n \hat{v}_k(t)\Phi_k(\xi). \tag{5} \label{trunc}\]
+Therefore,
+\[\lim_{n \to \oo} \norm{y(t, \cdot) - \hat{y}^{(n)}(t, \cdot)}_{\hil} = 0 \tag{6} \label{trueconv}\]
+for all \(t \in [0, 1]\).
+
+\subsection{Stochastic Galerkin Method}
+The stochastic Galerkin approach is a spectral method used to solve a variety of random differential equations. Unlike non-intrusive sampling methods like Monte Carlo simulations, the stochastic Galerkin method incorporates the uncertainty directly into the solution by representing it as a gPC expansion. The residual of the numerical approximation is required to be orthogonal to the finite subspace spanned by the basis polynomials, which makes the approximation optimal in the associated Hilbert norm. The result is a system of deterministic equations that can be solved numerically. We follow the process detailed in \cite[Section 6.2]{xiu2010numerical} for ordinary differential equations and later prove the well-posedness of the system.
+
+Our goal is to compute approximations of the coefficient functions in the truncated series \labelcref{trunc}. Let \(\vb v^{(n)} = [v_0 \; v_1 \; v_2 \; \cdots \; v_n]^\top\) be a vector of approximate coefficients \(v_k \approx \hat{v}_k\) for \(k \in \{0, 1, \dots , n\}\). Define the approximate solution
+\[\tilde{y}^{(n)}(t, \xi) \coloneqq \sum_{k=0}^n v_k(t)\Phi_k(\xi). \tag{7} \label{apx}\]
+Inserting the approximation \labelcref{apx} into the FDE \labelcref{fde} results in a residual \(r^{(n)}(t, \xi)\):
+\begin{gather*}
+    \D \tilde{y}^{(n)}(t, \xi) - a(\xi)\tilde{y}^{(n)}(t, \xi) = r^{(n)}(t, \xi), \\
+    \sum_{k=0}^n \D v_k(t)\Phi_k(\xi) - a(\xi)\sum_{k=0}^n v_k(t)\Phi_k(\xi) = r^{(n)}(t, \xi).
+\end{gather*}
+By the nature of the stochastic Galerkin method, \(r^{(n)}(t, \xi)\) is required to be orthogonal to the subspace spanned by \(\{\Phi_0, \Phi_1, \dots , \Phi_n\}\). Taking the inner product on \(\hil\) with \(\Phi_j\), we have
+\[\D v_j(t) - \sum_{k=0}^n v_k(t)\langle a\Phi_k, \Phi_j\rangle = 0, \quad j \in \{0, 1, \dots , n\}. \tag{8} \label{syseq}\]
+The system \labelcref{syseq} can be represented in matrix form
+\[\D \vb v^{(n)}(t) = A\vb v^{(n)}(t) \tag{9} \label{sysmat}\]
+where the entries of the matrix \(A = [a_{ij}] \in \bb R^{(n+1) \times (n+1)}\) are
+\[a_{ij} = \langle a\Phi_i, \Phi_j \rangle = \int_{\Xi} a(\xi')\Phi_i(\xi')\Phi_j(\xi')\rho(\xi')\dd{\xi'}.\]
+The boundary conditions for the system are determined using the gPC expansion \labelcref{gpc}. We match the values of the approximate coefficient functions at the boundary with the true values. For \(i \in \bb N_0\),
+\begin{align*}
+\begin{split}
+    v_i(0) &= \hat{v}_i(0) = \langle y_0, \Phi_i \rangle = \int_{\Xi}y_0(\xi')\Phi_i(\xi')\rho(\xi')\dd{\xi'}, \\
+    v_i(1) &= \hat{v}_i(1) = \langle y_1, \Phi_i \rangle = \int_{\Xi}y_1(\xi')\Phi_i(\xi')\rho(\xi')\dd{\xi'}.
+\end{split}
+\tag{10} \label{sysbound}
+\end{align*}
+The BVP \labelcref{sysmat}, \labelcref{sysbound} can now be solved numerically.
+
+\section{Convergence of the Stochastic Galerkin Method}
+This section details the proof for convergence of the Galerkin system \labelcref{sysmat}, \labelcref{sysbound} to the gPC expansion \labelcref{gpc}.
+
+\subsection{Preliminaries}
+We now impose additional assumptions to ensure the well-posedness of the problem, and compare the following hypotheses to the assumptions (A1), (A2), and (A3) from \cite[Section 3.1]{pulch2025stochastic}.
+\begin{enumerate}[label=(H\arabic*)]
+    \item In the FDE \labelcref{fde} and boundary conditions \labelcref{bound}, the functions \(a, y_0, y_1 : \Xi \to \bb R\) are piecewise smooth.
+    \item There exists a constant \(\gamma > 0\) such that \(\abs{E_{\alpha, 2}(a(\xi))} \geq \gamma\) for all \(\xi \in \Xi\).
+    \item The orthonormal basis polynomials \(\{\Phi_n\}\) of \(\hil\) are uniformly bounded: there exist constants \(C > 0\) and \(\delta \geq 0\) such that \(\norm{\Phi_n}_\oo \leq Cn^\delta\) for all \(n \in \bb N\).
+    \item The solution \(y(t, \cdot)\) possesses sufficient regularity such that it belongs to the weighted Sobolev space \(\sob\) with \(s > \delta + 2\), consistent with the conditions established in the preceding three hypotheses.
+    \item The function \(a\) is essentially bounded.
+\end{enumerate}
+
+Most notably, we relax the assumption (A1) for uniform convergence of the gPC expansion \labelcref{gpc} and its Caputo derivative with a more granular set of assumptions: (H1), (H2) (owing to the denominator in the solution \labelcref{sol}), (H3), and (H4), from which the property follows. We maintain (A2) as (H5) and derive (A3) as a consequence of (H4). (H3) in particular is a property for various polynomial bases in the Askey scheme and we limit our purview to such bases only.
+
+We now state an auxiliary result required to prove the series \labelcref{gpc} and its Caputo derivative are uniformly convergent in \(\xi\).
+\begin{lemma}
+    Given (H4), the coefficients of the gPC expansion \labelcref{gpc} satisfy
+    \[\abs{\hat{v}_k(t)} \leq Ck^{-s} \tag{11} \label{coeffbound}\]
+    for some constant \(C > 0\) uniformly for all \(t \in [0, 1]\), for all \(k \in \bb N\).
+\end{lemma}
+\begin{proof}
+    Acording to \cite[Equation 5.1.7]{canuto2006spectral},
+    \[\norm{y(t, \cdot)}_{\sob} = \sum_{k=0}^\oo (1 + k^2)^s\hat{v}_k(t)^2.\]
+    Let \(\norm{y(t, \cdot)}_{\sob} = C^2\). Then for every \(k \in \bb N_0\),
+    \[(1 + k^2)^s\hat{v}_k(t)^2 \leq C^2 \Rightarrow \hat{v}_k(t)^2 \leq \f{C^2}{(1 + k^2)^s} \Rightarrow \abs{\hat{v}_k(t)} \leq Ck^{-s}\]
+    uniformly for all \(t \in [0, 1]\).
+\end{proof}
+
+We now present the proof for uniform convergence.
+\begin{lemma}
+    Given (H1), (H2), (H3), and (H4), the gPC expansion \labelcref{gpc}
+    \[y(t, \xi) = \sum_{k=0}^\oo \hat{v}_k(t) \Phi_k(\xi)\]
+    converges uniformly in \(\xi\) for all \(t \in [0, 1]\). Furthermore the series
+    of the term-by-term Caputo derivatives converges uniformly to the Caputo derivative of the solution:
+    \[\D y(t, \xi) = \sum_{k=0}^\oo (\D \hat{v}_k(t))\Phi_k(\xi).\]
+\end{lemma}
+\begin{proof}
+    To prove the uniform convergence of the gPC expansion, we employ the Weierstrass-M test. Consider the supremum of the \(k\)th term in the expansion:
+    \[\sup_{\xi \in \Xi} \abs{\hat{v}_k(t)\Phi_k(\xi)} = \abs{\hat{v}_k(t)} \cdot \norm{\Phi_k}_\oo.\]
+    By Lemma 1 \labelcref{coeffbound} and (H3) there exist \(C_1, C_2 > 0\) such that
+    \[\abs{\hat{v}_k(t)} \cdot \norm{\Phi_k}_\oo \leq C_1k^{-s} \cdot C_2k^{\delta} = C_1C_2k^{\delta - s}.\]
+    By (H4), \(\delta - s < -2\), implying the uniform convergence of the gPC expansion.
+
+    We now proceed to show that the series of the term-by-term Caputo derivatives converges uniformly to the Caputo derivative of the solution. Firstly, recall the original FDE \labelcref{fde}:
+    \[\D y(t, \xi) = a(\xi)y(t, \xi).\]
+    We know that for any \(k \in \bb N_0\)
+    \[\D \hat{v}_k(t) = \D \langle y(t, \cdot), \Phi_k\rangle = \langle \D y(t, \cdot), \Phi_k \rangle.\]
+    Substituting in the relation from the FDE,
+    \[\D \hat{v}_k(t) = \langle a(\cdot)y(t, \cdot), \Phi_k\rangle.\]
+    In other words, \(\D \hat{v}_k(t)\) is simply the \(k\)th coefficient in the gPC expansion of \(g(t, \xi) = a(\xi)y(t, \xi)\). Since both \(a\) and \(y(t, \cdot)\) are in \(\sob\), it follows that \(g(t, \cdot)\) is also in \(\sob\). The result now follows from the preceding section of the proof. There exists  a constant \(C_3 > 0\) such that
+    \[\sup_{\xi \in \Xi} \abs{(\D \hat{v}_k(t)) \Phi_k(\xi)} \leq C_2C_3k^{\delta - s}.\]
+    Once again by (H4), since \(\delta - s < -2\), the gPC expansion of \(g(t, \xi)\) converges uniformly, and as such, the series of term-by-term Caputo derivatives converges uniformly.
+\end{proof}
+
+The following lemma was previously stated in \cite[Section 3.1]{pulch2025stochastic} as (A3), which we now can derive as a consequence of (H4).
+\begin{lemma}
+    The coefficients of the gPC expansion \labelcref{gpc} satisfy the following property:
+    \[\lim_{n \to \oo} (n+1)\sum_{k=n+1}^\oo \abs{\hat{v}_k(t)} = 0\]
+    for all \(t \in [0, 1]\)
+\end{lemma}
+\begin{proof}
+    By Lemma 1 \labelcref{coeffbound} there exists \(C > 0\) such that
+    \[\abs{\hat{v}_k(t)} \leq Ck^{-s}.\]
+    As such,
+    \[\sum_{k=n+1} \abs{\hat{v}_k(t)} \leq C\sum_{k=n+1}^\oo k^{-s}.\]
+    Since \(s > \delta + 2 \geq 2\), we may bound the summation with the corresponding integral:
+    \[\sum_{k=n+1}^\oo k^{-2} \leq \int_n^\oo x^{-s}\dd{x} = \f{n^{-(s-1)}}{s-1}.\]
+    As such,
+    \[(n+1)\sum_{k=n+1}^\oo \abs{\hat{v}_k(t)} \leq (n+1) \cdot \f{Cn^{-(s-1)}}{s-1}.\]
+    For the limit to be 0, we may analyze its asymptotic behaviour. We require \(1 - (s-1) < 0 \Rightarrow s > 2\). By (H3), since \(s > \delta + 2\) and \(\delta \geq 0\) the condition holds, and as such by the squeeze theorem
+    \[\lim_{n \to \oo} (n+1) \sum_{k=n+1}^\oo \abs{\hat{v}_k(t)} = 0\]
+    for all \(t \in [0, 1]\).
+\end{proof}
+
+\printbibliography
+
+\end{document}
